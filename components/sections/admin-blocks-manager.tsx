@@ -23,7 +23,10 @@ export function AdminBlocksManager({
   async function createBlock(form: HTMLFormElement) {
     const values = new FormData(form);
     const supabase = createSupabaseBrowserClient();
-    if (!supabase) return toast.error("Connect Supabase to manage towers.");
+    if (!supabase) {
+      toast.error("Connect Supabase to manage towers.");
+      return;
+    }
     const houseId = String(values.get("houseId") ?? "");
 
     const { error } = await supabase.from("blocks").insert({
@@ -32,7 +35,10 @@ export function AdminBlocksManager({
       house_id: houseId || null,
     });
 
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     form.reset();
     toast.success("Tower created.");
     router.refresh();
@@ -41,7 +47,10 @@ export function AdminBlocksManager({
   async function updateBlock(block: AdminBlock, form: HTMLFormElement) {
     const values = new FormData(form);
     const supabase = createSupabaseBrowserClient();
-    if (!supabase) return toast.error("Connect Supabase to manage towers.");
+    if (!supabase) {
+      toast.error("Connect Supabase to manage towers.");
+      return;
+    }
     const houseId = String(values.get("houseId") ?? "");
 
     const { error } = await supabase
@@ -53,7 +62,10 @@ export function AdminBlocksManager({
       })
       .eq("id", block.id);
 
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     toast.success("Tower updated.");
     router.refresh();
   }
@@ -64,10 +76,16 @@ export function AdminBlocksManager({
     }
 
     const supabase = createSupabaseBrowserClient();
-    if (!supabase) return toast.error("Connect Supabase to manage towers.");
+    if (!supabase) {
+      toast.error("Connect Supabase to manage towers.");
+      return;
+    }
     const { error } = await supabase.from("blocks").delete().eq("id", block.id);
 
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     toast.success("Tower deleted.");
     router.refresh();
   }

@@ -41,13 +41,17 @@ export function AdminSessionGate({ children }: { children: React.ReactNode }) {
 
   async function signIn(form: HTMLFormElement) {
     const supabase = createSupabaseBrowserClient();
-    if (!supabase) return toast.error("Connect Supabase before signing in.");
+    if (!supabase) {
+      toast.error("Connect Supabase before signing in.");
+      return;
+    }
 
     setSubmitting(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       setSubmitting(false);
-      return toast.error(error.message);
+      toast.error(error.message);
+      return;
     }
 
     await checkAccess();
