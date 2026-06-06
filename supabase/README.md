@@ -84,7 +84,7 @@ For a database that previously used the sample seed:
 3. Run `supabase/seed/001_seed_championship.sql` to ensure the four houses exist.
 4. Create the first admin using the instructions above.
 5. Sign in at `/admin`.
-6. Add the 16 real towers from `/admin/blocks` and assign each one to a house.
+6. Review the 15 real blocks from `/admin/blocks` and assign each one to a house.
 7. Create and publish real events from `/admin/events`.
 8. Manage team registrations, result positions, and point allocations from
    `/admin/team-events`.

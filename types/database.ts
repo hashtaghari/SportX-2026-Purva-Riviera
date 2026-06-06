@@ -50,7 +50,7 @@ export type Database = {
           id: string;
           name: string;
           display_order: number;
-          house_id: string;
+          house_id: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -58,7 +58,7 @@ export type Database = {
           id?: string;
           name: string;
           display_order: number;
-          house_id: string;
+          house_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };

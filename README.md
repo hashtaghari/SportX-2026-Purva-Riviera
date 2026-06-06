@@ -49,11 +49,13 @@ Run, in order:
 
 1. `supabase/migrations/001_initial_schema.sql`
 2. `supabase/migrations/002_team_registrations_and_allocations.sql`
-3. `supabase/seed/001_seed_championship.sql`
+3. `supabase/migrations/003_allow_unassigned_blocks.sql`
+4. `supabase/seed/001_seed_championship.sql`
 
-The seed contains only Red, Green, Yellow, and Blue House. Add the real towers and
-events through the authenticated admin area. If sample data was applied previously,
-run `supabase/reset/clear_championship_data.sql` once before beginning real setup.
+The seed contains Red, Green, Yellow, and Blue House plus the 15 real block names.
+Blocks remain unassigned until their houses are selected in the authenticated admin
+area. If sample data was applied previously, run
+`supabase/reset/clear_championship_data.sql` once before beginning real setup.
 
 The app reads from Supabase when environment variables are present. Without them,
 the query layer returns clean empty states and zeroed house standings.

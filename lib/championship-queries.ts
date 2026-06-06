@@ -161,6 +161,7 @@ export async function getTeamRegistrationOptions(): Promise<{
     supabase
       .from("blocks")
       .select("id, name, house_id, houses(name, color)")
+      .not("house_id", "is", null)
       .order("display_order", { ascending: true }),
   ]);
 
@@ -195,16 +196,17 @@ export async function getTeamRegistrationOptions(): Promise<{
     }];
   });
 
-  const registrationBlocks = (blocks ?? []).map((block) => {
+  const registrationBlocks = (blocks ?? []).flatMap((block) => {
+    if (!block.house_id) return [];
     const house = block.houses as { name?: string; color?: string } | null;
 
-    return {
+    return [{
       id: block.id,
       name: block.name,
       houseId: block.house_id,
       houseName: house?.name ?? "House",
       houseColor: house?.color ?? "#64748b",
-    };
+    }];
   });
 
   return {

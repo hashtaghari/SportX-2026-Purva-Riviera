@@ -24,11 +24,12 @@ export function AdminBlocksManager({
     const values = new FormData(form);
     const supabase = createSupabaseBrowserClient();
     if (!supabase) return toast.error("Connect Supabase to manage towers.");
+    const houseId = String(values.get("houseId") ?? "");
 
     const { error } = await supabase.from("blocks").insert({
       name: String(values.get("name") ?? "").trim(),
       display_order: Number(values.get("displayOrder")),
-      house_id: String(values.get("houseId") ?? ""),
+      house_id: houseId || null,
     });
 
     if (error) return toast.error(error.message);
@@ -41,13 +42,14 @@ export function AdminBlocksManager({
     const values = new FormData(form);
     const supabase = createSupabaseBrowserClient();
     if (!supabase) return toast.error("Connect Supabase to manage towers.");
+    const houseId = String(values.get("houseId") ?? "");
 
     const { error } = await supabase
       .from("blocks")
       .update({
         name: String(values.get("name") ?? "").trim(),
         display_order: Number(values.get("displayOrder")),
-        house_id: String(values.get("houseId") ?? ""),
+        house_id: houseId || null,
       })
       .eq("id", block.id);
 
@@ -167,16 +169,15 @@ function HouseSelect({
   defaultValue,
 }: {
   houses: AdminHouseOption[];
-  defaultValue?: string;
+  defaultValue?: string | null;
 }) {
   return (
     <select
       name="houseId"
       defaultValue={defaultValue ?? ""}
-      required
       className="h-10 w-full rounded-md border bg-background px-3 text-sm"
     >
-      <option value="">Select house</option>
+      <option value="">Unassigned</option>
       {houses.map((house) => (
         <option key={house.id} value={house.id}>
           {house.name}

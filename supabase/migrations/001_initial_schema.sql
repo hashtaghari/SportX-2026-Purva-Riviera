@@ -25,7 +25,7 @@ create table public.blocks (
   id uuid primary key default gen_random_uuid(),
   name text not null unique,
   display_order integer not null unique check (display_order between 1 and 16),
-  house_id uuid not null references public.houses(id) on delete restrict,
+  house_id uuid references public.houses(id) on delete restrict,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

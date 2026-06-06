@@ -10,7 +10,7 @@ export type AdminBlock = {
   id: string;
   name: string;
   displayOrder: number;
-  houseId: string;
+  houseId: string | null;
 };
 
 export type AdminEvent = {
