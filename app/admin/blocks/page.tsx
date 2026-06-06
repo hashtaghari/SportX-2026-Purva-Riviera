@@ -18,8 +18,8 @@ export default async function AdminBlocksPage() {
           Towers & House Assignments
         </h1>
         <p className="mt-3 max-w-2xl text-muted-foreground">
-          Review the real Purva Riviera block names and assign each one to Red,
-          Green, Yellow, or Blue House when the assignments are ready.
+          Review the temporary balanced assignments and change any block to Red,
+          Green, Yellow, or Blue House when the final assignments are ready.
         </p>
       </div>
       <AdminBlocksManager houses={data.houses} blocks={data.blocks} />

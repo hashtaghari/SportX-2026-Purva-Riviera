@@ -74,17 +74,18 @@ Admins can:
 
 ## Starting With Real Championship Data
 
-The seed file now inserts only the four permanent houses. It does not add sample
-towers, events, participants, scores, announcements, or gallery images.
+The seed file inserts the four permanent houses and the 15 real blocks with balanced
+temporary house assignments. It does not add sample events, participants, scores,
+announcements, or gallery images.
 
 For a database that previously used the sample seed:
 
-1. Apply both migrations.
+1. Apply all migrations in numeric order.
 2. Run `supabase/reset/clear_championship_data.sql` once from the Supabase SQL editor.
 3. Run `supabase/seed/001_seed_championship.sql` to ensure the four houses exist.
 4. Create the first admin using the instructions above.
 5. Sign in at `/admin`.
-6. Review the 15 real blocks from `/admin/blocks` and assign each one to a house.
+6. Review or change the temporary block assignments from `/admin/blocks`.
 7. Create and publish real events from `/admin/events`.
 8. Manage team registrations, result positions, and point allocations from
    `/admin/team-events`.
