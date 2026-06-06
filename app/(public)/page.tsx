@@ -45,6 +45,7 @@ export default async function HomePage() {
   const upcomingEvents = events
     .filter((event) => event.status !== "completed")
     .slice(0, 4);
+  const nextEvent = upcomingEvents[0];
 
   return (
     <>
@@ -112,16 +113,24 @@ export default async function HomePage() {
                 priority
                 className="aspect-[4/3] w-full object-cover"
               />
-              <div className="grid gap-4 p-5">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Countdown</p>
-                    <p className="font-semibold">Championship opening day</p>
+              {nextEvent ? (
+                <div className="grid gap-4 p-5">
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Next event</p>
+                      <p className="font-semibold">{nextEvent.name}</p>
+                    </div>
+                    <Badge variant="outline">
+                      {new Date(nextEvent.startsAt).toLocaleDateString("en-IN")}
+                    </Badge>
                   </div>
-                  <Badge variant="outline">Dec 12, 2026</Badge>
+                  <CountdownCard targetDate={nextEvent.startsAt} />
                 </div>
-                <CountdownCard />
-              </div>
+              ) : (
+                <div className="p-5">
+                  <EmptyState icon={CalendarDays} title="Event schedule coming soon" />
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -167,8 +176,9 @@ export default async function HomePage() {
           </CardHeader>
           <CardContent className="grid gap-3">
             {upcomingEvents.length ? (
-              upcomingEvents.map((event) => (
-                <div key={event.id} className="rounded-md border p-4">
+              upcomingEvents.map((event) => {
+                const eventCard = (
+                  <div className="rounded-md border p-4 transition hover:border-foreground/25 hover:bg-muted/40">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="font-medium">{event.name}</p>
@@ -188,8 +198,22 @@ export default async function HomePage() {
                     <CalendarDays className="h-4 w-4" />
                     {new Date(event.startsAt).toLocaleString("en-IN")}
                   </p>
+                  {event.registrationStatus === "open" ? (
+                    <p className="mt-3 text-sm font-medium text-accent">
+                      Register for this event <ArrowRight className="ml-1 inline h-3.5 w-3.5" />
+                    </p>
+                  ) : null}
                 </div>
-              ))
+                );
+
+                return event.registrationStatus === "open" ? (
+                  <Link key={event.id} href={`/register?event=${event.id}`}>
+                    {eventCard}
+                  </Link>
+                ) : (
+                  <div key={event.id}>{eventCard}</div>
+                );
+              })
             ) : (
               <EmptyState icon={CalendarDays} title="No upcoming events" />
             )}

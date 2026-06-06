@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import { MapPin } from "lucide-react";
+import Link from "next/link";
+import { CalendarDays, MapPin } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getChampionshipEvents } from "@/lib/championship-queries";
 
@@ -23,7 +25,7 @@ export default async function EventsPage() {
         </h1>
       </div>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {events.map((event) => (
+        {events.length ? events.map((event) => (
           <Card key={event.id}>
             <CardHeader>
               <div className="flex items-start justify-between gap-4">
@@ -48,9 +50,23 @@ export default async function EventsPage() {
               >
                 Registration {event.registrationStatus}
               </Badge>
+              {event.registrationStatus === "open" ? (
+                <Button asChild className="mt-5 w-full">
+                  <Link href={`/register?event=${event.id}`}>Register</Link>
+                </Button>
+              ) : null}
             </CardContent>
           </Card>
-        ))}
+        )) : (
+          <div className="col-span-full flex min-h-72 flex-col items-center justify-center rounded-md border border-dashed p-8 text-center">
+            <CalendarDays className="h-7 w-7 text-muted-foreground" />
+            <h2 className="mt-4 text-lg font-semibold">No events published yet</h2>
+            <p className="mt-2 max-w-md text-sm text-muted-foreground">
+              The SportX schedule will appear here as soon as the admin publishes the
+              first event.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -24,7 +24,7 @@ Production-ready Next.js 15 App Router foundation for the Purva Riviera inter-ho
 - `lib` Supabase clients, query functions, and utilities
 - `types` championship and database types
 - `hooks` shared React hooks
-- `data` local seed-shaped fallback data for development
+- `data` empty-state fallback structures for development
 - `supabase` migrations and seed SQL
 
 ## Getting Started
@@ -45,8 +45,17 @@ SUPABASE_SERVICE_ROLE_KEY=
 
 ## Supabase
 
-Run the schema in `supabase/migrations/001_initial_schema.sql`, then apply `supabase/seed/001_seed_championship.sql`.
+Run, in order:
 
-The app reads from Supabase when environment variables are present. Without them, the query layer returns local seed-shaped data so the interface can build and the next product steps can continue.
+1. `supabase/migrations/001_initial_schema.sql`
+2. `supabase/migrations/002_team_registrations_and_allocations.sql`
+3. `supabase/seed/001_seed_championship.sql`
+
+The seed contains only Red, Green, Yellow, and Blue House. Add the real towers and
+events through the authenticated admin area. If sample data was applied previously,
+run `supabase/reset/clear_championship_data.sql` once before beginning real setup.
+
+The app reads from Supabase when environment variables are present. Without them,
+the query layer returns clean empty states and zeroed house standings.
 
 Auth, RLS, storage policies, and first-admin setup are documented in `supabase/README.md`.

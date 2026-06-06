@@ -69,7 +69,29 @@ Admins can:
 
 4. Sign in as that user from the app.
 
-   After this, `public.is_admin()` returns `true`, and `public.is_super_admin()` returns `true`.
+   Open `/admin` and use the email and password created in step 1. After this,
+   `public.is_admin()` returns `true`, and `public.is_super_admin()` returns `true`.
+
+## Starting With Real Championship Data
+
+The seed file now inserts only the four permanent houses. It does not add sample
+towers, events, participants, scores, announcements, or gallery images.
+
+For a database that previously used the sample seed:
+
+1. Apply both migrations.
+2. Run `supabase/reset/clear_championship_data.sql` once from the Supabase SQL editor.
+3. Run `supabase/seed/001_seed_championship.sql` to ensure the four houses exist.
+4. Create the first admin using the instructions above.
+5. Sign in at `/admin`.
+6. Add the 16 real towers from `/admin/blocks` and assign each one to a house.
+7. Create and publish real events from `/admin/events`.
+8. Manage team registrations, result positions, and point allocations from
+   `/admin/team-events`.
+
+The cleanup script retains `admin_profiles` and the four houses, but removes
+championship operational data. Review it before running it against any database
+that already contains real registrations.
 
 ## Creating Additional Admins
 

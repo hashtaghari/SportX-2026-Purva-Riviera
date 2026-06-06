@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { ClipboardList, Medal, Trophy, Users } from "lucide-react";
+import Link from "next/link";
+import { Building2, CalendarPlus, ClipboardList, Medal, Trophy, Users } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   getChampionshipEvents,
@@ -57,10 +59,24 @@ export default async function AdminDashboardPage() {
             <CardTitle>Operations Queue</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-2 text-sm text-muted-foreground">
-            <p>Registration approvals</p>
-            <p>Waitlist decisions</p>
-            <p>Score entries</p>
-            <p>Fixture updates</p>
+            <Button asChild variant="outline" className="justify-start">
+              <Link href="/admin/blocks">
+                <Building2 className="h-4 w-4" />
+                Add towers and assign houses
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="justify-start">
+              <Link href="/admin/events">
+                <CalendarPlus className="h-4 w-4" />
+                Create and publish events
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="justify-start">
+              <Link href="/admin/team-events">
+                <Trophy className="h-4 w-4" />
+                Manage registrations and results
+              </Link>
+            </Button>
           </CardContent>
         </Card>
         <Card>

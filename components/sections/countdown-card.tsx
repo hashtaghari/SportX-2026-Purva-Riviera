@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-const target = new Date("2026-12-12T08:00:00+05:30").getTime();
-
-function getCountdown() {
+function getCountdown(target: number) {
   const distance = Math.max(target - Date.now(), 0);
   return {
     days: Math.floor(distance / (1000 * 60 * 60 * 24)),
@@ -14,13 +12,14 @@ function getCountdown() {
   };
 }
 
-export function CountdownCard() {
-  const [time, setTime] = useState(getCountdown);
+export function CountdownCard({ targetDate }: { targetDate: string }) {
+  const target = new Date(targetDate).getTime();
+  const [time, setTime] = useState(() => getCountdown(target));
 
   useEffect(() => {
-    const timer = window.setInterval(() => setTime(getCountdown()), 1000);
+    const timer = window.setInterval(() => setTime(getCountdown(target)), 1000);
     return () => window.clearInterval(timer);
-  }, []);
+  }, [target]);
 
   return (
     <div className="grid grid-cols-4 gap-2">
