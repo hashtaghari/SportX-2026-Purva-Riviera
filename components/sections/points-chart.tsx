@@ -26,13 +26,19 @@ export function PointsChart({ standings }: { standings: HouseStanding[] }) {
   }, []);
 
   return (
-    <div className="h-72 w-full">
+    <div className="h-56 min-w-0 w-full sm:h-72">
       {mounted ? (
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 12, right: 8, left: -20, bottom: 0 }}>
+          <BarChart data={data} margin={{ top: 12, right: 4, left: -28, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="name" tickLine={false} axisLine={false} />
-            <YAxis tickLine={false} axisLine={false} />
+            <XAxis
+              dataKey="name"
+              tickLine={false}
+              axisLine={false}
+              interval={0}
+              tick={{ fontSize: 12 }}
+            />
+            <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12 }} width={32} />
             <Tooltip
               cursor={{ fill: "rgba(148, 163, 184, 0.12)" }}
               contentStyle={{

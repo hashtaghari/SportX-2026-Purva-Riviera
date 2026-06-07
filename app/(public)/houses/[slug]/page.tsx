@@ -74,14 +74,14 @@ export default async function HouseDetailPage({ params }: HousePageProps) {
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <Button asChild variant="ghost" size="sm" className="mb-6">
-        <Link href="/leaderboard">
+        <Link href="/#standings">
           <ChevronLeft className="h-4 w-4" />
-          Leaderboard
+          Standings
         </Link>
       </Button>
 
       <section className="overflow-hidden rounded-lg border bg-card shadow-sm">
-        <div className="relative min-h-[420px]">
+        <div className="relative min-h-[340px] sm:min-h-[420px]">
           <Image
             src={bannerSrc}
             alt={`${house.name} SportX 2026 banner`}
@@ -90,15 +90,15 @@ export default async function HouseDetailPage({ params }: HousePageProps) {
             className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/78 via-black/48 to-black/12" />
-          <div className="relative z-10 grid min-h-[420px] content-end px-5 py-8 text-white sm:px-8 lg:px-10">
+          <div className="relative z-10 grid min-h-[340px] content-end px-5 py-8 text-white sm:min-h-[420px] sm:px-8 lg:px-10">
             <div className="max-w-3xl">
               <Badge variant="outline" className="border-white/30 text-white">
                 Rank #{house.rank || "TBD"}
               </Badge>
-              <h1 className="mt-4 text-5xl font-semibold tracking-normal sm:text-6xl">
+              <h1 className="mt-4 text-4xl font-semibold tracking-normal sm:text-6xl">
                 {house.name}
               </h1>
-              <p className="mt-4 max-w-2xl text-lg text-white/82">
+              <p className="mt-4 max-w-2xl text-base leading-7 text-white/82 sm:text-lg">
                 {house.motto ?? "SportX 2026 championship house profile"}
               </p>
               <div className="mt-6 flex flex-wrap gap-2">
@@ -114,14 +114,14 @@ export default async function HouseDetailPage({ params }: HousePageProps) {
         </div>
       </section>
 
-      <section className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <section className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard icon={Trophy} label="Total Points" value={formatPoints(house.totalPoints)} />
         <MetricCard icon={Medal} label="Medals" value={totalMedals} />
         <MetricCard icon={Users} label="Participants" value={house.participantCount} />
         <MetricCard icon={Shield} label="Events Participated" value={house.eventsParticipated} />
       </section>
 
-      <section className="mt-6 grid gap-6 lg:grid-cols-[0.82fr_1.18fr]">
+      <section className="mt-6 grid min-w-0 gap-6 lg:grid-cols-[0.82fr_1.18fr]">
         <div className="grid gap-6">
           <Card>
             <CardHeader>
@@ -191,7 +191,33 @@ export default async function HouseDetailPage({ params }: HousePageProps) {
             </CardHeader>
             <CardContent>
               {house.eventContributions.length ? (
-                <div className="overflow-x-auto">
+                <>
+                <div className="grid gap-3 sm:hidden">
+                  {house.eventContributions.map((event) => (
+                    <div key={event.eventId} className="rounded-md border p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="font-medium">{event.eventName}</p>
+                          <p className="mt-1 text-sm text-muted-foreground">
+                            {event.category ?? "SportX"}
+                          </p>
+                          {event.resultLabel ? (
+                            <p className="mt-2 text-xs text-muted-foreground">
+                              {event.resultLabel}
+                            </p>
+                          ) : null}
+                        </div>
+                        <div className="text-right">
+                          <p className="font-semibold">{formatPoints(event.points)}</p>
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            {event.position ? `#${event.position}` : "-"}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="hidden overflow-x-auto sm:block">
                   <table className="w-full min-w-[620px] text-sm">
                     <thead>
                       <tr className="border-b text-left text-muted-foreground">
@@ -226,6 +252,7 @@ export default async function HouseDetailPage({ params }: HousePageProps) {
                     </tbody>
                   </table>
                 </div>
+                </>
               ) : (
                 <EmptyState text="No event points recorded yet." />
               )}

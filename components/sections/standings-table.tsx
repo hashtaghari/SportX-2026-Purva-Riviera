@@ -158,8 +158,67 @@ export function StandingsTable({
   });
 
   return (
-    <div className="overflow-hidden rounded-lg border bg-card">
-      <div className="overflow-x-auto">
+    <div className="min-w-0 overflow-hidden rounded-lg border bg-card">
+      <div className="grid gap-3 p-3 sm:hidden">
+        {standings.map((house) => {
+          const leaderPoints = Math.max(
+            ...standings.map((item) => item.totalPoints),
+            0,
+          );
+          const progress = leaderPoints
+            ? Math.round((house.totalPoints / leaderPoints) * 100)
+            : 0;
+
+          return (
+            <Link
+              key={house.id}
+              href={`/houses/${house.slug}`}
+              className="rounded-md border bg-background p-3 transition hover:bg-muted/50"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span
+                    className="h-3 w-3 shrink-0 rounded-full"
+                    style={{ background: house.color }}
+                  />
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold">{house.name}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Rank #{house.rank} · {house.eventsParticipated} events
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="font-semibold">{formatPoints(house.totalPoints)}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {house.pointsGap === 0 ? "Leader" : `${house.pointsGap} gap`}
+                  </p>
+                </div>
+              </div>
+              <div className="mt-3 flex flex-wrap gap-3 text-sm">
+                <span aria-label={`${house.goldMedals} gold medals`}>
+                  🥇 {house.goldMedals}
+                </span>
+                <span aria-label={`${house.silverMedals} silver medals`}>
+                  🥈 {house.silverMedals}
+                </span>
+                <span aria-label={`${house.bronzeMedals} bronze medals`}>
+                  🥉 {house.bronzeMedals}
+                </span>
+              </div>
+              {showPointProgress ? (
+                <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
+                  <div
+                    className="h-full rounded-full"
+                    style={{ width: `${progress}%`, backgroundColor: house.color }}
+                  />
+                </div>
+              ) : null}
+            </Link>
+          );
+        })}
+      </div>
+      <div className="hidden overflow-x-auto sm:block">
         <table
           className={`w-full text-sm ${
             showPointProgress ? "min-w-[860px]" : "min-w-[720px]"

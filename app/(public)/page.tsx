@@ -51,7 +51,7 @@ export default async function HomePage() {
     <>
       {pinnedAnnouncement ? (
         <section className="border-b border-border/70 bg-primary text-primary-foreground">
-          <div className="mx-auto flex w-full max-w-7xl items-start gap-3 px-4 py-3 text-sm sm:px-6 lg:px-8">
+          <div className="mx-auto flex w-full max-w-7xl items-start gap-3 px-4 py-3 text-xs sm:px-6 sm:text-sm lg:px-8">
             <Bell className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
             <p>
               <span className="font-semibold">{pinnedAnnouncement.title}</span>
@@ -63,15 +63,15 @@ export default async function HomePage() {
 
       <section className="relative overflow-hidden">
         <div className="sportx-hero-grid absolute inset-0" aria-hidden="true" />
-        <div className="mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-7xl items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1fr_0.92fr] lg:px-8">
+        <div className="mx-auto grid w-full max-w-7xl items-center gap-8 px-4 py-8 sm:px-6 sm:py-12 lg:min-h-[calc(100vh-4rem)] lg:grid-cols-[1fr_0.92fr] lg:px-8">
           <div className="relative z-10 max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-muted-foreground">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground sm:text-sm sm:tracking-[0.24em]">
               Purva Riviera Inter-House Sports Championship
             </p>
-            <h1 className="mt-4 text-5xl font-semibold leading-[1.02] tracking-normal sm:text-6xl lg:text-7xl">
+            <h1 className="mt-4 text-4xl font-semibold leading-[1.04] tracking-normal sm:text-6xl lg:text-7xl">
               SportX 2026
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
+            <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground sm:mt-6 sm:text-lg sm:leading-8">
               Live house standings, fixtures, registrations, results, and
               championship moments for Red, Green, Yellow, and Blue House.
             </p>
@@ -88,16 +88,16 @@ export default async function HomePage() {
                 <Link href="/events">Explore Events</Link>
               </Button>
             </div>
-            <div className="mt-8 grid max-w-2xl grid-cols-2 gap-3 sm:grid-cols-4">
+            <div className="mt-6 grid max-w-2xl grid-cols-2 gap-3 sm:mt-8 sm:grid-cols-4">
               {[
                 ["Participants", stats.participants],
                 ["Completed", stats.completedEvents],
                 ["Remaining", stats.remainingEvents],
                 ["Leader", stats.leadingHouse],
               ].map(([label, value]) => (
-                <div key={label} className="rounded-md border bg-card/78 p-3">
+                <div key={label} className="min-w-0 rounded-md border bg-card/78 p-3">
                   <p className="text-xs text-muted-foreground">{label}</p>
-                  <p className="mt-1 text-lg font-semibold">{value}</p>
+                  <p className="mt-1 truncate text-base font-semibold sm:text-lg">{value}</p>
                 </div>
               ))}
             </div>
@@ -114,7 +114,7 @@ export default async function HomePage() {
                 className="aspect-[4/3] w-full object-cover"
               />
               {nextEvent ? (
-                <div className="grid gap-4 p-5">
+                <div className="grid gap-4 p-4 sm:p-5">
                   <div className="flex items-center justify-between gap-4">
                     <div>
                       <p className="text-sm text-muted-foreground">Next event</p>
@@ -138,7 +138,7 @@ export default async function HomePage() {
 
       <section
         id="standings"
-        className="mx-auto grid scroll-mt-24 w-full max-w-7xl gap-6 px-4 pb-16 sm:px-6 xl:grid-cols-[0.72fr_1.28fr] lg:px-8"
+        className="mx-auto grid min-w-0 scroll-mt-24 w-full max-w-7xl gap-4 px-4 pb-12 sm:gap-6 sm:px-6 sm:pb-16 xl:grid-cols-[0.72fr_1.28fr] lg:px-8"
       >
         <Card>
           <CardHeader>
@@ -171,7 +171,7 @@ export default async function HomePage() {
         </Card>
       </section>
 
-      <section className="mx-auto grid w-full max-w-7xl gap-6 px-4 pb-16 sm:px-6 lg:grid-cols-3 lg:px-8">
+      <section className="mx-auto grid min-w-0 w-full max-w-7xl gap-4 px-4 pb-12 sm:gap-6 sm:px-6 sm:pb-16 lg:grid-cols-3 lg:px-8">
         <Card>
           <CardHeader>
             <CardTitle>Upcoming Events</CardTitle>
@@ -183,13 +183,14 @@ export default async function HomePage() {
                 const eventCard = (
                   <div className="rounded-md border p-4 transition hover:border-foreground/25 hover:bg-muted/40">
                   <div className="flex items-start justify-between gap-3">
-                    <div>
+                    <div className="min-w-0">
                       <p className="font-medium">{event.name}</p>
                       <p className="mt-1 text-sm text-muted-foreground">
                         {event.venue}
                       </p>
                     </div>
                     <Badge
+                      className="shrink-0"
                       variant={
                         event.registrationStatus === "open" ? "success" : "warning"
                       }
@@ -197,8 +198,8 @@ export default async function HomePage() {
                       {event.registrationStatus}
                     </Badge>
                   </div>
-                  <p className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
-                    <CalendarDays className="h-4 w-4" />
+                  <p className="mt-3 flex items-start gap-2 text-sm text-muted-foreground">
+                    <CalendarDays className="mt-0.5 h-4 w-4 shrink-0" />
                     {new Date(event.startsAt).toLocaleString("en-IN")}
                   </p>
                   {event.registrationStatus === "open" ? (
@@ -237,7 +238,7 @@ export default async function HomePage() {
                       className="mt-1 h-3 w-3 rounded-full"
                       style={{ backgroundColor: result.houseColor }}
                     />
-                    <div>
+                    <div className="min-w-0">
                       <p className="font-medium">{result.eventName}</p>
                       <p className="mt-1 text-sm text-muted-foreground">
                         {result.summary}
@@ -265,8 +266,8 @@ export default async function HomePage() {
               announcements.slice(0, 4).map((announcement) => (
                 <div key={announcement.id} className="rounded-md border p-4">
                   <div className="flex items-start gap-3">
-                    <Bell className="mt-0.5 h-4 w-4 text-accent" />
-                    <div>
+                    <Bell className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                    <div className="min-w-0">
                       <p className="font-medium">{announcement.title}</p>
                       <p className="mt-1 text-sm text-muted-foreground">
                         {announcement.body}
@@ -282,13 +283,13 @@ export default async function HomePage() {
         </Card>
       </section>
 
-      <section className="mx-auto w-full max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
+      <section className="mx-auto min-w-0 w-full max-w-7xl px-4 pb-16 sm:px-6 sm:pb-20 lg:px-8">
         <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.2em] text-muted-foreground">
               Featured Gallery
             </p>
-            <h2 className="mt-2 text-3xl font-semibold tracking-normal">
+            <h2 className="mt-2 text-2xl font-semibold tracking-normal sm:text-3xl">
               Moments From The Championship
             </h2>
           </div>

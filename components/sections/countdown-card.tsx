@@ -22,7 +22,7 @@ export function CountdownCard({ targetDate }: { targetDate: string }) {
   }, [target]);
 
   return (
-    <div className="grid grid-cols-4 gap-2">
+    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
       {[
         ["Days", time.days],
         ["Hours", time.hours],

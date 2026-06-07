@@ -88,6 +88,13 @@ export function SiteHeader() {
                 {item.label}
               </Link>
             ))}
+            <Link
+              href="/register"
+              onClick={() => setOpen(false)}
+              className="rounded-md bg-accent px-3 py-3 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent/90"
+            >
+              Register
+            </Link>
           </div>
         </nav>
       </div>
