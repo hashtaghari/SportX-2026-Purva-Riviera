@@ -82,7 +82,7 @@ export default async function HomePage() {
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline">
-                <Link href="/leaderboard">View Leaderboard</Link>
+                <Link href="/#standings">View Leaderboard</Link>
               </Button>
               <Button asChild size="lg" variant="ghost">
                 <Link href="/events">Explore Events</Link>
@@ -136,7 +136,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto grid w-full max-w-7xl gap-6 px-4 pb-16 sm:px-6 xl:grid-cols-[0.72fr_1.28fr] lg:px-8">
+      <section
+        id="standings"
+        className="mx-auto grid scroll-mt-24 w-full max-w-7xl gap-6 px-4 pb-16 sm:px-6 xl:grid-cols-[0.72fr_1.28fr] lg:px-8"
+      >
         <Card>
           <CardHeader>
             <CardTitle>Points Distribution</CardTitle>

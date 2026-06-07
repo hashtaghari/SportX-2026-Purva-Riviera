@@ -5,14 +5,12 @@ import { usePathname } from "next/navigation";
 import { Menu, Trophy, X } from "lucide-react";
 import { useState } from "react";
 
-import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const navigation = [
-  { label: "Leaderboard", href: "/leaderboard" },
+  { label: "Home", href: "/" },
   { label: "Events", href: "/events" },
-  { label: "Register", href: "/register" },
   { label: "Admin", href: "/admin" },
 ];
 
@@ -49,14 +47,12 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
-          <ThemeToggle />
           <Button asChild size="sm" variant="accent">
             <Link href="/register">Register</Link>
           </Button>
         </div>
 
         <div className="flex items-center gap-1 md:hidden">
-          <ThemeToggle />
           <Button
             type="button"
             variant="ghost"
