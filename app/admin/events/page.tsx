@@ -1,12 +1,20 @@
 import type { Metadata } from "next";
 
 import { AdminEventsManager } from "@/components/sections/admin-events-manager";
-import { getAdminEvents } from "@/lib/admin-management-queries";
+import {
+  getAdminBlocksData,
+  getAdminEvents,
+  getAdminEventScores,
+} from "@/lib/admin-management-queries";
 
 export const metadata: Metadata = { title: "Manage Events" };
 
 export default async function AdminEventsPage() {
-  const events = await getAdminEvents();
+  const [events, scores, { houses }] = await Promise.all([
+    getAdminEvents(),
+    getAdminEventScores(),
+    getAdminBlocksData(),
+  ]);
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
@@ -16,11 +24,11 @@ export default async function AdminEventsPage() {
         </p>
         <h1 className="mt-3 text-4xl font-semibold tracking-normal">Manage Events</h1>
         <p className="mt-3 max-w-2xl text-muted-foreground">
-          Create events, publish registration, configure individual or team entry,
-          and update schedules and results status.
+          Publish event posters, schedules, rulebooks, winner details, and
+          house-wise points.
         </p>
       </div>
-      <AdminEventsManager events={events} />
+      <AdminEventsManager events={events} houses={houses} scores={scores} />
     </div>
   );
 }

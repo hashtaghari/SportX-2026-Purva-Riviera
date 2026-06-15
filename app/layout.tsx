@@ -27,6 +27,11 @@ export const metadata: Metadata = {
     "inter-house championship",
     "sports leaderboard",
   ],
+  openGraph: {
+    title: "SportX 2026 | Riviera's Pride",
+    description: "Purva Riviera Inter-House Sports Championship.",
+    images: ["/images/brand/sportx-2026-logo.jpg"],
+  },
 };
 
 export default function RootLayout({

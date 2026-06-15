@@ -30,6 +30,24 @@ export type ChampionshipEvent = {
   startsAt: string;
   status: "upcoming" | "ongoing" | "completed";
   registrationStatus: "open" | "closed" | "waitlist";
+  posterUrl?: string | null;
+};
+
+export type EventHouseScore = {
+  houseId: string;
+  houseName: string;
+  houseColor: string;
+  points: number;
+  position: number | null;
+  resultLabel: string | null;
+};
+
+export type EventDetail = ChampionshipEvent & {
+  description: string | null;
+  rules: string | null;
+  endsAt: string | null;
+  winnerDetails: string | null;
+  scores: EventHouseScore[];
 };
 
 export type RegistrationBlock = {

@@ -20,9 +20,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Button asChild variant="ghost" size="sm">
               <Link href="/admin/events">Events</Link>
             </Button>
-            <Button asChild variant="ghost" size="sm">
-              <Link href="/admin/team-events">Team Events</Link>
-            </Button>
             <Button asChild variant="outline" size="sm">
               <Link href="/">Public Site</Link>
             </Button>

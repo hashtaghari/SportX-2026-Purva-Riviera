@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
-type AuthState = "loading" | "signed-out" | "unauthorized" | "admin";
+type AuthState = "loading" | "disconnected" | "signed-out" | "unauthorized" | "admin";
 
 export function AdminSessionGate({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>("loading");
@@ -20,7 +20,7 @@ export function AdminSessionGate({ children }: { children: React.ReactNode }) {
 
   async function checkAccess() {
     const supabase = createSupabaseBrowserClient();
-    if (!supabase) return setState("unauthorized");
+    if (!supabase) return setState("disconnected");
 
     const { data } = await supabase.auth.getUser();
     if (!data.user) return setState("signed-out");
@@ -86,7 +86,12 @@ export function AdminSessionGate({ children }: { children: React.ReactNode }) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {state === "unauthorized" ? (
+            {state === "disconnected" ? (
+              <p className="mb-5 text-sm text-muted-foreground">
+                Connect this app to Supabase before signing in. Add the project URL
+                and keys to <code>.env.local</code>, then create the first admin.
+              </p>
+            ) : state === "unauthorized" ? (
               <p className="mb-5 text-sm text-muted-foreground">
                 This account is not an active SportX admin. Ask the first super admin
                 to add it to admin_profiles.
@@ -119,7 +124,7 @@ export function AdminSessionGate({ children }: { children: React.ReactNode }) {
                   onChange={(event) => setPassword(event.target.value)}
                 />
               </div>
-              <Button type="submit" disabled={submitting}>
+              <Button type="submit" disabled={submitting || state === "disconnected"}>
                 <LogIn className="h-4 w-4" />
                 {submitting ? "Signing in..." : "Sign In"}
               </Button>

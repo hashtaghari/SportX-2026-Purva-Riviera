@@ -9,8 +9,10 @@ import {
 } from "@tanstack/react-table";
 import { TrendingDown, TrendingUp } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 import { Badge } from "@/components/ui/badge";
+import { getHouseBrand } from "@/lib/brand-assets";
 import { formatPoints } from "@/lib/utils";
 import type { HouseStanding } from "@/types/championship";
 
@@ -26,11 +28,16 @@ function getColumns(showPointProgress: boolean): ColumnDef<HouseStanding>[] {
   {
     accessorKey: "name",
     header: "House",
-    cell: ({ row }) => (
-      <div className="flex items-center gap-3">
-        <span
-          className="h-3 w-3 rounded-full"
-          style={{ background: row.original.color }}
+    cell: ({ row }) => {
+      const brand = getHouseBrand(row.original.slug);
+      return (
+        <div className="flex items-center gap-3">
+        <Image
+          src={brand.crest}
+          alt=""
+          width={36}
+          height={36}
+          className="h-9 w-9 shrink-0 rounded-full border object-cover"
         />
         <Link
           href={`/houses/${row.original.slug}`}
@@ -39,7 +46,8 @@ function getColumns(showPointProgress: boolean): ColumnDef<HouseStanding>[] {
           {row.original.name}
         </Link>
       </div>
-    ),
+      );
+    },
   },
   {
     accessorKey: "totalPoints",
@@ -106,8 +114,10 @@ function getColumns(showPointProgress: boolean): ColumnDef<HouseStanding>[] {
   {
     accessorKey: "pointsGap",
     header: "Gap",
-    cell: ({ row }) =>
-      row.original.pointsGap === 0 ? (
+    cell: ({ row, table }) =>
+      table.options.data.every((house) => house.totalPoints === 0) ? (
+        <Badge variant="outline">No scores</Badge>
+      ) : row.original.pointsGap === 0 ? (
         <Badge variant="success">Leader</Badge>
       ) : (
         <span className="text-muted-foreground">
@@ -177,9 +187,12 @@ export function StandingsTable({
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
-                  <span
-                    className="h-3 w-3 shrink-0 rounded-full"
-                    style={{ background: house.color }}
+                  <Image
+                    src={getHouseBrand(house.slug).crest}
+                    alt=""
+                    width={40}
+                    height={40}
+                    className="h-10 w-10 shrink-0 rounded-full border object-cover"
                   />
                   <div className="min-w-0">
                     <p className="truncate font-semibold">{house.name}</p>
@@ -191,7 +204,11 @@ export function StandingsTable({
                 <div className="text-right">
                   <p className="font-semibold">{formatPoints(house.totalPoints)}</p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    {house.pointsGap === 0 ? "Leader" : `${house.pointsGap} gap`}
+                    {leaderPoints === 0
+                      ? "No scores"
+                      : house.pointsGap === 0
+                        ? "Leader"
+                        : `${house.pointsGap} gap`}
                   </p>
                 </div>
               </div>

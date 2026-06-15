@@ -19,6 +19,7 @@ import type {
   House,
   HouseDetail,
   HouseStanding,
+  EventDetail,
   MedalStanding,
   PointsHistoryPoint,
   RegistrationBlock,
@@ -103,7 +104,7 @@ export async function getChampionshipEvents(): Promise<ChampionshipEvent[]> {
 
   const { data, error } = await supabase
     .from("events")
-    .select("slug, name, category, venue, starts_at, status, registration_status")
+    .select("slug, name, category, venue, starts_at, status, registration_status, poster_url")
     .order("starts_at", { ascending: true });
 
   if (error || !data) {
@@ -119,7 +120,84 @@ export async function getChampionshipEvents(): Promise<ChampionshipEvent[]> {
     status: event.status as ChampionshipEvent["status"],
     registrationStatus:
       event.registration_status as ChampionshipEvent["registrationStatus"],
+    posterUrl: event.poster_url,
   }));
+}
+
+export async function getEventDetail(slug: string): Promise<EventDetail | null> {
+  const fallbackEvent = EVENTS.find((event) => event.id === slug);
+  const fallback: EventDetail | null = fallbackEvent
+    ? {
+        ...fallbackEvent,
+        description: `${fallbackEvent.name} brings Purva Riviera residents together for a competitive SportX 2026 fixture.`,
+        rules:
+          "Participants must report 20 minutes before the scheduled start. The event coordinator's decision is final. Fair play and resident safety rules apply throughout.",
+        endsAt: null,
+        winnerDetails:
+          fallbackEvent.status === "completed"
+            ? `${RECENT_RESULTS.find((result) => result.eventName === fallbackEvent.name)?.houseName ?? "Winner"} recorded the leading result.`
+            : null,
+        scores: HOUSE_STANDINGS.map((house) => ({
+          houseId: house.id,
+          houseName: house.name,
+          houseColor: house.color,
+          points:
+            RECENT_RESULTS.find(
+              (result) =>
+                result.eventName === fallbackEvent.name &&
+                result.houseName === house.name,
+            )?.points ?? 0,
+          position: null,
+          resultLabel: null,
+        })).filter((score) => score.points > 0),
+      }
+    : null;
+
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) return fallback;
+
+  const { data: event, error } = await supabase
+    .from("events")
+    .select(
+      "id, slug, name, category, description, rules, poster_url, winner_details, venue, starts_at, ends_at, status, registration_status",
+    )
+    .eq("slug", slug)
+    .single();
+
+  if (error || !event) return fallback;
+
+  const { data: scores } = await supabase
+    .from("event_scores")
+    .select("house_id, points, position, result_label, houses(name, color)")
+    .eq("event_id", event.id)
+    .order("position", { ascending: true, nullsFirst: false });
+
+  return {
+    id: event.slug,
+    name: event.name,
+    category: event.category,
+    venue: event.venue,
+    startsAt: event.starts_at,
+    status: event.status as ChampionshipEvent["status"],
+    registrationStatus:
+      event.registration_status as ChampionshipEvent["registrationStatus"],
+    posterUrl: event.poster_url,
+    description: event.description,
+    rules: event.rules,
+    endsAt: event.ends_at,
+    winnerDetails: event.winner_details,
+    scores: (scores ?? []).map((score) => {
+      const house = score.houses as { name?: string; color?: string } | null;
+      return {
+        houseId: score.house_id,
+        houseName: house?.name ?? "House",
+        houseColor: house?.color ?? "#64748b",
+        points: score.points,
+        position: score.position,
+        resultLabel: score.result_label,
+      };
+    }),
+  };
 }
 
 export async function getTeamRegistrationOptions(): Promise<{

@@ -109,6 +109,8 @@ export type Database = {
           category: string;
           description: string | null;
           rules: string | null;
+          poster_url: string | null;
+          winner_details: string | null;
           venue: string;
           starts_at: string;
           ends_at: string | null;
@@ -127,6 +129,8 @@ export type Database = {
           category: string;
           description?: string | null;
           rules?: string | null;
+          poster_url?: string | null;
+          winner_details?: string | null;
           venue: string;
           starts_at: string;
           ends_at?: string | null;

@@ -51,7 +51,7 @@ export default async function LeaderboardPage() {
           </h1>
           <p className="mt-3 max-w-2xl text-muted-foreground">
             Live rankings from event scores and medal results across Red,
-            Green, Yellow, and Blue House.
+            Green Eagles, Yellow Tigers, and Blue Sharks.
           </p>
         </div>
         <div className="grid gap-3 sm:grid-cols-3 lg:min-w-[520px]">

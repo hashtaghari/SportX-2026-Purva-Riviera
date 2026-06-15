@@ -29,6 +29,11 @@ import {
   getHouseStandings,
   getRecentResults,
 } from "@/lib/championship-queries";
+import {
+  PARTICIPANT_REGISTRATION_URL,
+  VOLUNTEER_REGISTRATION_URL,
+} from "@/lib/registration-links";
+import { SportXLogo } from "@/components/brand/sportx-logo";
 
 export default async function HomePage() {
   const [stats, standings, events, announcements, results, galleryImages] =
@@ -68,21 +73,22 @@ export default async function HomePage() {
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground sm:text-sm sm:tracking-[0.24em]">
               Purva Riviera Inter-House Sports Championship
             </p>
-            <h1 className="mt-4 text-4xl font-semibold leading-[1.04] tracking-normal sm:text-6xl lg:text-7xl">
-              SportX 2026
-            </h1>
+            <h1 className="sr-only">SportX 2026</h1>
+            <SportXLogo priority className="mt-4 w-full max-w-[460px]" />
             <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground sm:mt-6 sm:text-lg sm:leading-8">
               Live house standings, fixtures, registrations, results, and
-              championship moments for Red, Green, Yellow, and Blue House.
+              championship moments for the Bulls, Eagles, Tigers, and Sharks.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg" variant="accent">
-                <Link href="/register">
-                  Register <ArrowRight className="h-4 w-4" />
+                <Link href={PARTICIPANT_REGISTRATION_URL} target="_blank" rel="noreferrer">
+                  Participant Form <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline">
-                <Link href="/#standings">View Leaderboard</Link>
+                <Link href={VOLUNTEER_REGISTRATION_URL} target="_blank" rel="noreferrer">
+                  Volunteer Form
+                </Link>
               </Button>
               <Button asChild size="lg" variant="ghost">
                 <Link href="/events">Explore Events</Link>
@@ -175,7 +181,7 @@ export default async function HomePage() {
         <Card>
           <CardHeader>
             <CardTitle>Upcoming Events</CardTitle>
-            <CardDescription>Fixtures and registration windows.</CardDescription>
+            <CardDescription>Fixtures, posters, and event details.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3">
             {upcomingEvents.length ? (
@@ -189,33 +195,24 @@ export default async function HomePage() {
                         {event.venue}
                       </p>
                     </div>
-                    <Badge
-                      className="shrink-0"
-                      variant={
-                        event.registrationStatus === "open" ? "success" : "warning"
-                      }
-                    >
-                      {event.registrationStatus}
+                    <Badge className="shrink-0" variant="outline">
+                      {event.status}
                     </Badge>
                   </div>
                   <p className="mt-3 flex items-start gap-2 text-sm text-muted-foreground">
                     <CalendarDays className="mt-0.5 h-4 w-4 shrink-0" />
                     {new Date(event.startsAt).toLocaleString("en-IN")}
                   </p>
-                  {event.registrationStatus === "open" ? (
-                    <p className="mt-3 text-sm font-medium text-accent">
-                      Register for this event <ArrowRight className="ml-1 inline h-3.5 w-3.5" />
-                    </p>
-                  ) : null}
+                  <p className="mt-3 text-sm font-medium text-accent">
+                    View event details <ArrowRight className="ml-1 inline h-3.5 w-3.5" />
+                  </p>
                 </div>
                 );
 
-                return event.registrationStatus === "open" ? (
-                  <Link key={event.id} href={`/register?event=${event.id}`}>
+                return (
+                  <Link key={event.id} href={`/events/${event.id}`}>
                     {eventCard}
                   </Link>
-                ) : (
-                  <div key={event.id}>{eventCard}</div>
                 );
               })
             ) : (

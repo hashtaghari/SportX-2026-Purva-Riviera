@@ -23,6 +23,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getHouseDetail } from "@/lib/championship-queries";
+import { getHouseBrand } from "@/lib/brand-assets";
 import { formatPoints } from "@/lib/utils";
 import type { HouseSlug } from "@/types/championship";
 
@@ -69,7 +70,8 @@ export default async function HouseDetailPage({ params }: HousePageProps) {
 
   const totalMedals =
     house.goldMedals + house.silverMedals + house.bronzeMedals;
-  const bannerSrc = house.bannerUrl ?? "/images/sportx-championship-collage.png";
+  const houseBrand = getHouseBrand(house.slug);
+  const bannerSrc = house.bannerUrl ?? houseBrand.crest;
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">

@@ -25,5 +25,10 @@ update public.houses
 set
   captain_name = null,
   vice_captain_name = null,
-  banner_url = null,
-  motto = null;
+  motto = null,
+  banner_url = case slug
+    when 'red' then '/images/houses/red-bulls.jpg'
+    when 'green' then '/images/houses/green-eagles.jpg'
+    when 'yellow' then '/images/houses/yellow-tigers.jpg'
+    when 'blue' then '/images/houses/blue-sharks.jpg'
+  end;

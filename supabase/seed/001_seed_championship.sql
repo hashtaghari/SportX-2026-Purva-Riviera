@@ -4,16 +4,18 @@ insert into public.houses (
   color,
   captain_name,
   vice_captain_name,
-  motto
+  motto,
+  banner_url
 )
 values
-  ('red', 'Red House', '#dc2626', null, null, null),
-  ('green', 'Green House', '#16a34a', null, null, null),
-  ('yellow', 'Yellow House', '#eab308', null, null, null),
-  ('blue', 'Blue House', '#2563eb', null, null, null)
+  ('red', 'Red Bulls', '#ed1c24', null, null, null, '/images/houses/red-bulls.jpg'),
+  ('green', 'Green Eagles', '#286337', null, null, null, '/images/houses/green-eagles.jpg'),
+  ('yellow', 'Yellow Tigers', '#ffd900', null, null, null, '/images/houses/yellow-tigers.jpg'),
+  ('blue', 'Blue Sharks', '#185d91', null, null, null, '/images/houses/blue-sharks.jpg')
 on conflict (slug) do update set
   name = excluded.name,
-  color = excluded.color;
+  color = excluded.color,
+  banner_url = excluded.banner_url;
 
 with block_assignments(name, display_order, house_slug) as (
   values

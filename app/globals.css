@@ -21,10 +21,10 @@
   --input: #dbe3ef;
   --ring: #2563eb;
   --radius: 0.5rem;
-  --house-red: #dc2626;
-  --house-green: #16a34a;
-  --house-yellow: #eab308;
-  --house-blue: #2563eb;
+  --house-red: #ed1c24;
+  --house-green: #286337;
+  --house-yellow: #ffd900;
+  --house-blue: #185d91;
 }
 
 @theme inline {
@@ -136,4 +136,30 @@ body {
     linear-gradient(90deg, color-mix(in srgb, var(--border) 55%, transparent) 1px, transparent 1px);
   background-size: 44px 44px;
   mask-image: linear-gradient(to bottom, black, transparent 82%);
+}
+
+.sportx-logo-light {
+  display: block;
+}
+
+.sportx-logo-dark {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sportx-logo-light {
+    display: none;
+  }
+
+  .sportx-logo-dark {
+    display: block;
+  }
+}
+
+.dark .sportx-logo-light {
+  display: none;
+}
+
+.dark .sportx-logo-dark {
+  display: block;
 }

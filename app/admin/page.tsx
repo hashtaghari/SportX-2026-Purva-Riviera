@@ -71,12 +71,10 @@ export default async function AdminDashboardPage() {
                 Create and publish events
               </Link>
             </Button>
-            <Button asChild variant="outline" className="justify-start">
-              <Link href="/admin/team-events">
-                <Trophy className="h-4 w-4" />
-                Manage registrations and results
-              </Link>
-            </Button>
+            <p className="rounded-md border border-dashed p-3">
+              Participant and volunteer registrations are collected through the
+              official Google Forms.
+            </p>
           </CardContent>
         </Card>
         <Card>

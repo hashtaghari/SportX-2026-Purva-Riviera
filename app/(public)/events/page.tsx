@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CalendarDays, MapPin } from "lucide-react";
+import { ArrowRight, CalendarDays, MapPin } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getChampionshipEvents } from "@/lib/championship-queries";
 
@@ -26,7 +25,14 @@ export default async function EventsPage() {
       </div>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {events.length ? events.map((event) => (
-          <Card key={event.id}>
+          <Link key={event.id} href={`/events/${event.id}`} className="block">
+          <Card className="h-full overflow-hidden transition hover:border-foreground/25 hover:shadow-md">
+            <div
+              className="aspect-[16/9] bg-muted bg-cover bg-center"
+              style={{
+                backgroundImage: `url(${event.posterUrl ?? "/images/sportx-championship-collage.png"})`,
+              }}
+            />
             <CardHeader>
               <div className="flex items-start justify-between gap-4">
                 <CardTitle>{event.name}</CardTitle>
@@ -44,19 +50,13 @@ export default async function EventsPage() {
               <p className="mt-2 text-sm">
                 {new Date(event.startsAt).toLocaleString("en-IN")}
               </p>
-              <Badge
-                className="mt-4"
-                variant={event.registrationStatus === "open" ? "success" : "warning"}
-              >
-                Registration {event.registrationStatus}
-              </Badge>
-              {event.registrationStatus === "open" ? (
-                <Button asChild className="mt-5 w-full">
-                  <Link href={`/register?event=${event.id}`}>Register</Link>
-                </Button>
-              ) : null}
+              <div className="mt-5 flex items-center justify-between rounded-md border px-4 py-2 text-sm font-medium">
+                View Event Details
+                <ArrowRight className="h-4 w-4" />
+              </div>
             </CardContent>
           </Card>
+          </Link>
         )) : (
           <div className="col-span-full flex min-h-72 flex-col items-center justify-center rounded-md border border-dashed p-8 text-center">
             <CalendarDays className="h-7 w-7 text-muted-foreground" />

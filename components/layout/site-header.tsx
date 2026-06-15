@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Trophy, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { SportXLogo } from "@/components/brand/sportx-logo";
 import { cn } from "@/lib/utils";
 
 const navigation = [
@@ -21,16 +22,8 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-border/80 bg-background/88 backdrop-blur-xl">
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center gap-2 font-semibold">
-          <span className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <Trophy className="h-5 w-5" aria-hidden="true" />
-          </span>
-          <span className="leading-tight">
-            SportX 2026
-            <span className="block text-xs font-normal text-muted-foreground">
-              Purva Riviera
-            </span>
-          </span>
+        <Link href="/" className="flex items-center" aria-label="SportX 2026 home">
+          <SportXLogo priority className="w-28" />
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
@@ -48,7 +41,7 @@ export function SiteHeader() {
 
         <div className="hidden items-center gap-2 md:flex">
           <Button asChild size="sm" variant="accent">
-            <Link href="/register">Register</Link>
+            <Link href="/register">Registration</Link>
           </Button>
         </div>
 
@@ -93,7 +86,7 @@ export function SiteHeader() {
               onClick={() => setOpen(false)}
               className="rounded-md bg-accent px-3 py-3 text-sm font-medium text-accent-foreground transition-colors hover:bg-accent/90"
             >
-              Register
+              Registration
             </Link>
           </div>
         </nav>

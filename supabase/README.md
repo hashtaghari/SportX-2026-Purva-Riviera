@@ -4,7 +4,8 @@ SportX 2026 uses Supabase Auth plus `public.admin_profiles` for role-based acces
 
 ## Roles
 
-- Public anonymous users can read public championship data and submit registrations.
+- Public anonymous users can read public championship data. Participant and volunteer
+  registrations are collected through the Google Forms linked by the app.
 - Admin users are Supabase Auth users with an active row in `public.admin_profiles`.
 - Super admins are admin users with `role = 'super_admin'` and can manage other admin profiles.
 
@@ -24,10 +25,9 @@ Public users can read:
 - leaderboard/result views
 - `public_participants`, which intentionally excludes mobile number, email, flat number, emergency contact, and notes
 
-Public users can insert:
-
-- `participants`
-- `event_registrations`, but only with `status = 'pending'`
+The database retains the original pending-registration insert policies for backwards
+compatibility, but the current public application does not submit registrations to
+Supabase.
 
 ## Admin Access
 
@@ -36,8 +36,7 @@ Admins can:
 - Manage houses and blocks
 - Create, edit, delete, and archive events
 - Read full participant contact details
-- Approve, reject, or waitlist registrations
-- Add/edit/delete scores and medals
+- Add/edit/delete event scores, winner details, and medals
 - Manage matches and brackets
 - Manage announcements
 - Insert/update/delete gallery metadata and gallery storage objects
@@ -72,6 +71,10 @@ Admins can:
    Open `/admin` and use the email and password created in step 1. After this,
    `public.is_admin()` returns `true`, and `public.is_super_admin()` returns `true`.
 
+Alternatively, after adding the service-role key and desired admin credentials to
+`.env.local`, run `npm run admin:create`. The command creates or refreshes the Auth
+user and ensures it has an active `super_admin` profile.
+
 ## Starting With Real Championship Data
 
 The seed file inserts the four permanent houses and the 15 real blocks with balanced
@@ -87,8 +90,8 @@ For a database that previously used the sample seed:
 5. Sign in at `/admin`.
 6. Review or change the temporary block assignments from `/admin/blocks`.
 7. Create and publish real events from `/admin/events`.
-8. Manage team registrations, result positions, and point allocations from
-   `/admin/team-events`.
+8. Publish event posters, schedules, venues, rulebooks, winner details, and house
+   points from `/admin/events`.
 
 The cleanup script retains `admin_profiles` and the four houses, but removes
 championship operational data. Review it before running it against any database
@@ -116,11 +119,28 @@ The migration creates the public `sportx-gallery` bucket. Anyone can read object
 
 Never expose `SUPABASE_SERVICE_ROLE_KEY` in browser code. Use it only in secure server-side scripts, deployment jobs, or the Supabase SQL editor.
 
-## Team Registration And Mixed-House Points
+## Current Registration Workflow
+
+Public registration is handled outside Supabase through:
+
+- Participant registration: `https://forms.gle/9ZgJCUzZof46Fhur5`
+- Volunteer registration: `https://docs.google.com/forms/d/e/1FAIpQLScNANIvXKQ781elKd5A_7GkOG-y_epLNDpwHpcXFG6lOyFIOA/viewform?usp=send_form`
+
+The public `/register` page links to both forms. Event cards open their event detail
+pages, where visitors can view the poster, date/time, venue, rulebook, results, and
+the same registration links.
+
+Admins manage the public event broadcast and manually enter each house's points and
+winner/result details at `/admin/events`.
+
+Apply `005_event_broadcast_fields.sql` after the earlier migrations to add event
+poster URLs and winner details.
+
+## Legacy Team Registration Schema
 
 Run `002_team_registrations_and_allocations.sql` after the initial schema.
 
-This migration adds:
+This migration remains available for historical data and possible future use. It adds:
 
 - Event-level individual/team registration settings and configurable team-size limits
 - Event position points such as Winner, Runner-up, and Third Place
@@ -139,7 +159,6 @@ ratio, handles rounding, stores the allocation breakdown, and rebuilds that even
 house scores.
 
 Example: a 5-member winning team with 3 Red and 2 Blue members receiving 100 points
-allocates 60 points to Red House and 40 points to Blue House.
+allocates 60 points to Red Bulls and 40 points to Blue Sharks.
 
-The admin Team Events page also exports event registrations as an Excel-compatible
-CSV with one row per team member.
+The legacy Team Events page is not linked from the current admin navigation.

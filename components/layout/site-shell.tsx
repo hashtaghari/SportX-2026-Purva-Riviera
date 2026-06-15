@@ -1,6 +1,7 @@
 import { Toaster } from "sonner";
 
 import { SiteHeader } from "@/components/layout/site-header";
+import { SportXLogo } from "@/components/brand/sportx-logo";
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
   return (
@@ -10,7 +11,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       <footer className="border-t border-border/80 bg-card/45">
         <div className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-8 text-sm sm:px-6 md:grid-cols-[1fr_auto] lg:px-8">
           <div>
-            <p className="font-semibold text-foreground">SportX 2026</p>
+            <SportXLogo className="w-32" />
             <p className="mt-2 max-w-xl text-muted-foreground">
               Purva Riviera Inter-House Sports Championship: live standings,
               registrations, schedules, announcements, and results.
@@ -23,7 +24,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
               <span className="h-2 rounded-full bg-house-yellow" />
               <span className="h-2 rounded-full bg-house-blue" />
             </div>
-            <p className="text-muted-foreground">Red · Green · Yellow · Blue</p>
+            <p className="text-muted-foreground">Bulls · Eagles · Tigers · Sharks</p>
           </div>
         </div>
       </footer>

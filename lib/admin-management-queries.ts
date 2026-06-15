@@ -20,15 +20,20 @@ export type AdminEvent = {
   category: string;
   description: string;
   rules: string;
+  posterUrl: string;
+  winnerDetails: string;
   venue: string;
   startsAt: string;
   endsAt: string;
   status: "upcoming" | "ongoing" | "completed" | "archived";
-  registrationStatus: "open" | "closed" | "waitlist";
-  registrationType: "individual" | "team";
-  minimumTeamSize: number;
-  maximumTeamSize: number;
-  maximumTeams: number | null;
+};
+
+export type AdminEventScore = {
+  eventId: string;
+  houseId: string;
+  points: number;
+  position: number | null;
+  resultLabel: string;
 };
 
 export async function getAdminBlocksData(): Promise<{
@@ -62,40 +67,42 @@ export async function getAdminEvents(): Promise<AdminEvent[]> {
   const supabase = await createSupabaseServerClient();
   if (!supabase) return [];
 
-  const [{ data: events }, { data: settings }] = await Promise.all([
-    supabase
-      .from("events")
-      .select(
-        "id, slug, name, category, description, rules, venue, starts_at, ends_at, status, registration_status",
-      )
-      .order("starts_at", { ascending: true }),
-    supabase
-      .from("event_registration_settings")
-      .select(
-        "event_id, registration_type, minimum_team_size, maximum_team_size, maximum_teams",
-      ),
-  ]);
-  const settingsByEvent = new Map((settings ?? []).map((setting) => [setting.event_id, setting]));
+  const { data: events } = await supabase
+    .from("events")
+    .select(
+      "id, slug, name, category, description, rules, poster_url, winner_details, venue, starts_at, ends_at, status",
+    )
+    .order("starts_at", { ascending: true });
 
-  return (events ?? []).map((event) => {
-    const setting = settingsByEvent.get(event.id);
-
-    return {
+  return (events ?? []).map((event) => ({
       id: event.id,
       slug: event.slug,
       name: event.name,
       category: event.category,
       description: event.description ?? "",
       rules: event.rules ?? "",
+      posterUrl: event.poster_url ?? "",
+      winnerDetails: event.winner_details ?? "",
       venue: event.venue,
       startsAt: event.starts_at,
       endsAt: event.ends_at ?? "",
       status: event.status,
-      registrationStatus: event.registration_status,
-      registrationType: setting?.registration_type ?? "individual",
-      minimumTeamSize: setting?.minimum_team_size ?? 1,
-      maximumTeamSize: setting?.maximum_team_size ?? 1,
-      maximumTeams: setting?.maximum_teams ?? null,
-    };
-  });
+    }));
+}
+
+export async function getAdminEventScores(): Promise<AdminEventScore[]> {
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) return [];
+
+  const { data } = await supabase
+    .from("event_scores")
+    .select("event_id, house_id, points, position, result_label");
+
+  return (data ?? []).map((score) => ({
+    eventId: score.event_id,
+    houseId: score.house_id,
+    points: score.points,
+    position: score.position,
+    resultLabel: score.result_label ?? "",
+  }));
 }

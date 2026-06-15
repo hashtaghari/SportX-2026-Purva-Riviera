@@ -55,6 +55,8 @@ create table public.events (
   category text not null,
   description text,
   rules text,
+  poster_url text,
+  winner_details text,
   venue text not null,
   starts_at timestamptz not null,
   ends_at timestamptz,
