@@ -26,6 +26,20 @@ import type {
 } from "@/lib/admin-management-queries";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
+const UPLOAD_TIMEOUT_MS = 45_000;
+
+function withUploadTimeout<T>(promise: Promise<T>) {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) => {
+      window.setTimeout(
+        () => reject(new Error("Upload timed out. Check the connection and try again.")),
+        UPLOAD_TIMEOUT_MS,
+      );
+    }),
+  ]);
+}
+
 export function AdminEventsManager({
   events,
   houses,
@@ -228,23 +242,33 @@ function EventEditor({
     }
 
     setBusy(true);
-    const extension = file.name.split(".").pop()?.toLowerCase() ?? "bin";
-    const safeExtension = extension.replace(/[^a-z0-9]/g, "") || "bin";
-    const path = `${folder}/${crypto.randomUUID()}.${safeExtension}`;
-    const { error } = await supabase.storage
-      .from("sportx-gallery")
-      .upload(path, file, { contentType: file.type, upsert: false });
+    try {
+      const extension = file.name.split(".").pop()?.toLowerCase() ?? "bin";
+      const safeExtension = extension.replace(/[^a-z0-9]/g, "") || "bin";
+      const path = `${folder}/${crypto.randomUUID()}.${safeExtension}`;
+      const { error } = await withUploadTimeout(
+        supabase.storage
+          .from("sportx-gallery")
+          .upload(path, file, { contentType: file.type, upsert: false }),
+      );
 
-    if (error) {
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      const { data } = supabase.storage.from("sportx-gallery").getPublicUrl(path);
+      onUploaded(data.publicUrl);
+      toast.success(successMessage);
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Upload failed. Check the connection and try again.",
+      );
+    } finally {
       setBusy(false);
-      toast.error(error.message);
-      return;
     }
-
-    const { data } = supabase.storage.from("sportx-gallery").getPublicUrl(path);
-    onUploaded(data.publicUrl);
-    setBusy(false);
-    toast.success(successMessage);
   }
 
   async function uploadPoster(file: File) {

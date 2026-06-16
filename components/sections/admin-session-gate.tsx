@@ -13,6 +13,17 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 type AuthState = "loading" | "disconnected" | "signed-out" | "unauthorized" | "admin";
 type LoginNotice = { type: "success" | "error"; message: string } | null;
 
+const AUTH_TIMEOUT_MS = 12_000;
+
+function withTimeout<T>(promise: PromiseLike<T>, message: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) => {
+      window.setTimeout(() => reject(new Error(message)), AUTH_TIMEOUT_MS);
+    }),
+  ]);
+}
+
 export function AdminSessionGate({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>("loading");
   const [username, setUsername] = useState("");
@@ -21,20 +32,37 @@ export function AdminSessionGate({ children }: { children: React.ReactNode }) {
   const [notice, setNotice] = useState<LoginNotice>(null);
 
   async function checkAccess() {
-    const supabase = createSupabaseBrowserClient();
-    if (!supabase) return setState("disconnected");
+    try {
+      const supabase = createSupabaseBrowserClient();
+      if (!supabase) return setState("disconnected");
 
-    const { data } = await supabase.auth.getUser();
-    if (!data.user) return setState("signed-out");
+      const { data } = await withTimeout(
+        supabase.auth.getUser(),
+        "Admin session check timed out.",
+      );
+      if (!data.user) return setState("signed-out");
 
-    const { data: profile } = await supabase
-      .from("admin_profiles")
-      .select("user_id")
-      .eq("user_id", data.user.id)
-      .eq("active", true)
-      .maybeSingle();
+      const { data: profile } = await withTimeout(
+        supabase
+          .from("admin_profiles")
+          .select("user_id")
+          .eq("user_id", data.user.id)
+          .eq("active", true)
+          .maybeSingle(),
+        "Admin role check timed out.",
+      );
 
-    setState(profile ? "admin" : "unauthorized");
+      setState(profile ? "admin" : "unauthorized");
+    } catch (error) {
+      setState("signed-out");
+      setNotice({
+        type: "error",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Could not check admin access. Please sign in again.",
+      });
+    }
   }
 
   useEffect(() => {
@@ -55,7 +83,21 @@ export function AdminSessionGate({ children }: { children: React.ReactNode }) {
     const email = normalizedUsername.includes("@")
       ? normalizedUsername
       : `${normalizedUsername}@sportx2026.com`;
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    let error: { message: string } | null = null;
+    try {
+      const response = await withTimeout(
+        supabase.auth.signInWithPassword({ email, password }),
+        "Login timed out. Check your connection and try again.",
+      );
+      error = response.error;
+    } catch (caught) {
+      error = {
+        message:
+          caught instanceof Error
+            ? caught.message
+            : "Login timed out. Check your connection and try again.",
+      };
+    }
     if (error) {
       setSubmitting(false);
       setNotice({
