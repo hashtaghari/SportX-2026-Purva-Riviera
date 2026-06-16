@@ -142,12 +142,7 @@ export function AdminSessionGate({ children }: { children: React.ReactNode }) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {state === "disconnected" ? (
-              <p className="mb-5 text-sm text-muted-foreground">
-                Connect this app to Supabase before signing in. Add the project URL
-                and keys to <code>.env.local</code>, then create the first admin.
-              </p>
-            ) : state === "unauthorized" ? (
+            {state === "unauthorized" ? (
               <p className="mb-5 text-sm text-muted-foreground">
                 This account is not an active SportX admin. Ask the first super admin
                 to add it to admin_profiles.
@@ -197,7 +192,7 @@ export function AdminSessionGate({ children }: { children: React.ReactNode }) {
                   onChange={(event) => setPassword(event.target.value)}
                 />
               </div>
-              <Button type="submit" disabled={submitting || state === "disconnected"}>
+              <Button type="submit" disabled={submitting}>
                 <LogIn className="h-4 w-4" />
                 {submitting ? "Signing in..." : "Sign In"}
               </Button>
