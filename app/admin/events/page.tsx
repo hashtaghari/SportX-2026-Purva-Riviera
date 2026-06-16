@@ -24,8 +24,8 @@ export default async function AdminEventsPage() {
         </p>
         <h1 className="mt-3 text-4xl font-semibold tracking-normal">Manage Events</h1>
         <p className="mt-3 max-w-2xl text-muted-foreground">
-          Publish event posters, schedules, rulebooks, winner details, and
-          house-wise points.
+          Upload event posters, publish schedules and rulebooks, add optional
+          registration links, and update winner details and house-wise points.
         </p>
       </div>
       <AdminEventsManager events={events} houses={houses} scores={scores} />

@@ -109,7 +109,9 @@ export type Database = {
           category: string;
           description: string | null;
           rules: string | null;
+          rulebook_url: string | null;
           poster_url: string | null;
+          registration_link: string | null;
           winner_details: string | null;
           venue: string;
           starts_at: string;
@@ -129,7 +131,9 @@ export type Database = {
           category: string;
           description?: string | null;
           rules?: string | null;
+          rulebook_url?: string | null;
           poster_url?: string | null;
+          registration_link?: string | null;
           winner_details?: string | null;
           venue: string;
           starts_at: string;

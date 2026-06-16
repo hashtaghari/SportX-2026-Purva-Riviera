@@ -31,6 +31,8 @@ export type ChampionshipEvent = {
   status: "upcoming" | "ongoing" | "completed";
   registrationStatus: "open" | "closed" | "waitlist";
   posterUrl?: string | null;
+  registrationLink?: string | null;
+  rulebookUrl?: string | null;
 };
 
 export type EventHouseScore = {
@@ -45,6 +47,7 @@ export type EventHouseScore = {
 export type EventDetail = ChampionshipEvent & {
   description: string | null;
   rules: string | null;
+  rulebookUrl: string | null;
   endsAt: string | null;
   winnerDetails: string | null;
   scores: EventHouseScore[];

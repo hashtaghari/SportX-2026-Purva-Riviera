@@ -90,8 +90,8 @@ For a database that previously used the sample seed:
 5. Sign in at `/admin`.
 6. Review or change the temporary block assignments from `/admin/blocks`.
 7. Create and publish real events from `/admin/events`.
-8. Publish event posters, schedules, venues, rulebooks, winner details, and house
-   points from `/admin/events`.
+8. Upload event posters and publish schedules, venues, rulebooks, optional
+   registration links, winner details, and house points from `/admin/events`.
 
 The cleanup script retains `admin_profiles` and the four houses, but removes
 championship operational data. Review it before running it against any database
@@ -133,8 +133,9 @@ the same registration links.
 Admins manage the public event broadcast and manually enter each house's points and
 winner/result details at `/admin/events`.
 
-Apply `005_event_broadcast_fields.sql` after the earlier migrations to add event
-poster URLs and winner details.
+Apply `005_event_broadcast_fields.sql`, `007_event_registration_link.sql`, and
+`008_event_rulebook_url.sql` after the earlier migrations to add event poster URLs,
+winner details, optional registration links, and optional PDF rulebooks.
 
 ## Legacy Team Registration Schema
 

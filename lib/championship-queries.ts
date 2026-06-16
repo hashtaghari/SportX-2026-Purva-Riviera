@@ -104,7 +104,7 @@ export async function getChampionshipEvents(): Promise<ChampionshipEvent[]> {
 
   const { data, error } = await supabase
     .from("events")
-    .select("slug, name, category, venue, starts_at, status, registration_status, poster_url")
+    .select("slug, name, category, venue, starts_at, status, registration_status, poster_url, registration_link")
     .order("starts_at", { ascending: true });
 
   if (error || !data) {
@@ -121,6 +121,7 @@ export async function getChampionshipEvents(): Promise<ChampionshipEvent[]> {
     registrationStatus:
       event.registration_status as ChampionshipEvent["registrationStatus"],
     posterUrl: event.poster_url,
+    registrationLink: event.registration_link,
   }));
 }
 
@@ -132,6 +133,7 @@ export async function getEventDetail(slug: string): Promise<EventDetail | null> 
         description: `${fallbackEvent.name} brings Purva Riviera residents together for a competitive SportX 2026 fixture.`,
         rules:
           "Participants must report 20 minutes before the scheduled start. The event coordinator's decision is final. Fair play and resident safety rules apply throughout.",
+        rulebookUrl: null,
         endsAt: null,
         winnerDetails:
           fallbackEvent.status === "completed"
@@ -159,7 +161,7 @@ export async function getEventDetail(slug: string): Promise<EventDetail | null> 
   const { data: event, error } = await supabase
     .from("events")
     .select(
-      "id, slug, name, category, description, rules, poster_url, winner_details, venue, starts_at, ends_at, status, registration_status",
+      "id, slug, name, category, description, rules, rulebook_url, poster_url, registration_link, winner_details, venue, starts_at, ends_at, status, registration_status",
     )
     .eq("slug", slug)
     .single();
@@ -182,8 +184,10 @@ export async function getEventDetail(slug: string): Promise<EventDetail | null> 
     registrationStatus:
       event.registration_status as ChampionshipEvent["registrationStatus"],
     posterUrl: event.poster_url,
+    registrationLink: event.registration_link,
     description: event.description,
     rules: event.rules,
+    rulebookUrl: event.rulebook_url,
     endsAt: event.ends_at,
     winnerDetails: event.winner_details,
     scores: (scores ?? []).map((score) => {

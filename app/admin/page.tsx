@@ -24,7 +24,13 @@ export default async function AdminDashboardPage() {
   const cards = [
     { label: "Participants", value: stats.participants, icon: Users },
     { label: "Events", value: events.length, icon: ClipboardList },
-    { label: "Leader", value: standings[0]?.name ?? "TBD", icon: Trophy },
+    {
+      label: "Leader",
+      value: standings.some((house) => house.totalPoints > 0)
+        ? standings[0]?.name ?? "TBD"
+        : "TBD",
+      icon: Trophy,
+    },
     { label: "Completed", value: stats.completedEvents, icon: Medal },
   ];
 

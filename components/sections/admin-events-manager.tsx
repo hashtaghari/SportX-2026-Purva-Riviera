@@ -1,7 +1,17 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { CalendarPlus, Save, Trash2, Trophy } from "lucide-react";
+import {
+  CalendarPlus,
+  FileText,
+  ImageUp,
+  Loader2,
+  Save,
+  Trash2,
+  Trophy,
+} from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -53,7 +63,10 @@ export function AdminEventsManager({
       category: String(values.get("category") ?? "").trim(),
       description: String(values.get("description") ?? "").trim() || null,
       rules: String(values.get("rules") ?? "").trim() || null,
+      rulebook_url: String(values.get("rulebookUrl") ?? "").trim() || null,
       poster_url: String(values.get("posterUrl") ?? "").trim() || null,
+      registration_link:
+        String(values.get("registrationLink") ?? "").trim() || null,
       winner_details: String(values.get("winnerDetails") ?? "").trim() || null,
       venue: String(values.get("venue") ?? "").trim(),
       starts_at: new Date(startsAt).toISOString(),
@@ -173,6 +186,100 @@ function EventEditor({
   onSubmit: (form: HTMLFormElement) => void | Promise<void>;
   onDelete?: () => void | Promise<void>;
 }) {
+  const [posterUrl, setPosterUrl] = useState(event?.posterUrl ?? "");
+  const [rulebookUrl, setRulebookUrl] = useState(event?.rulebookUrl ?? "");
+  const [uploading, setUploading] = useState(false);
+  const [uploadingRulebook, setUploadingRulebook] = useState(false);
+
+  async function uploadAsset({
+    file,
+    folder,
+    allowedTypes,
+    maxSizeMb,
+    onUploaded,
+    setBusy,
+    successMessage,
+  }: {
+    file: File;
+    folder: string;
+    allowedTypes: string[];
+    maxSizeMb: number;
+    onUploaded: (url: string) => void;
+    setBusy: (busy: boolean) => void;
+    successMessage: string;
+  }) {
+    if (!allowedTypes.includes(file.type)) {
+      toast.error(
+        allowedTypes.includes("application/pdf")
+          ? "Choose a PDF file for the rulebook."
+          : "Choose a PNG, JPEG, or WebP image.",
+      );
+      return;
+    }
+    if (file.size > maxSizeMb * 1024 * 1024) {
+      toast.error(`File must be smaller than ${maxSizeMb} MB.`);
+      return;
+    }
+
+    const supabase = createSupabaseBrowserClient();
+    if (!supabase) {
+      toast.error("Connect Supabase before uploading files.");
+      return;
+    }
+
+    setBusy(true);
+    const extension = file.name.split(".").pop()?.toLowerCase() ?? "bin";
+    const safeExtension = extension.replace(/[^a-z0-9]/g, "") || "bin";
+    const path = `${folder}/${crypto.randomUUID()}.${safeExtension}`;
+    const { error } = await supabase.storage
+      .from("sportx-gallery")
+      .upload(path, file, { contentType: file.type, upsert: false });
+
+    if (error) {
+      setBusy(false);
+      toast.error(error.message);
+      return;
+    }
+
+    const { data } = supabase.storage.from("sportx-gallery").getPublicUrl(path);
+    onUploaded(data.publicUrl);
+    setBusy(false);
+    toast.success(successMessage);
+  }
+
+  async function uploadPoster(file: File) {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Choose an image file for the event poster.");
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      toast.error("Poster images must be smaller than 8 MB.");
+      return;
+    }
+
+    await uploadAsset({
+      file,
+      folder: "event-posters",
+      allowedTypes: ["image/png", "image/jpeg", "image/webp"],
+      maxSizeMb: 8,
+      onUploaded: setPosterUrl,
+      setBusy: setUploading,
+      successMessage: "Poster uploaded.",
+    });
+  }
+
+  async function uploadRulebook(file: File) {
+    await uploadAsset({
+      file,
+      folder: "event-rulebooks",
+      allowedTypes: ["application/pdf"],
+      maxSizeMb: 15,
+      onUploaded: setRulebookUrl,
+      setBusy: setUploadingRulebook,
+      successMessage: "Rulebook PDF uploaded.",
+    });
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -198,6 +305,10 @@ function EventEditor({
             </Field>
             <Field label="Slug">
               <Input name="slug" defaultValue={event?.slug} placeholder="Auto-generated if blank" />
+              <p className="text-xs text-muted-foreground">
+                The short URL for this event, like <code>football-finals</code>.
+                Leave blank to generate it from the event name.
+              </p>
             </Field>
             <Field label="Category">
               <Input name="category" required defaultValue={event?.category} />
@@ -206,14 +317,67 @@ function EventEditor({
               <Input name="venue" required defaultValue={event?.venue} />
             </Field>
           </div>
-          <Field label="Poster image URL">
-            <Input
-              name="posterUrl"
-              type="url"
-              defaultValue={event?.posterUrl}
-              placeholder="https://..."
-            />
-          </Field>
+          <div className="grid gap-4 md:grid-cols-[1fr_1fr]">
+            <Field label="Event poster">
+              <div className="grid gap-3">
+                <Input
+                  name="posterFile"
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  disabled={uploading}
+                  onChange={(changeEvent) => {
+                    const file = changeEvent.target.files?.[0];
+                    if (file) void uploadPoster(file);
+                  }}
+                />
+                <input type="hidden" name="posterUrl" value={posterUrl} />
+                <p className="text-xs text-muted-foreground">
+                  Upload PNG, JPEG, or WebP up to 8 MB.
+                </p>
+                {uploading ? (
+                  <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Uploading poster...
+                  </p>
+                ) : null}
+              </div>
+            </Field>
+            <Field label="Poster preview">
+              {posterUrl ? (
+                <div className="relative aspect-[16/9] overflow-hidden rounded-md border bg-muted">
+                  <Image
+                    src={posterUrl}
+                    alt="Event poster preview"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="flex aspect-[16/9] items-center justify-center rounded-md border border-dashed text-sm text-muted-foreground">
+                  <ImageUp className="mr-2 h-4 w-4" />
+                  No poster uploaded
+                </div>
+              )}
+            </Field>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Field label="Poster image URL">
+              <Input
+                type="url"
+                value={posterUrl}
+                placeholder="Or paste an image URL"
+                onChange={(changeEvent) => setPosterUrl(changeEvent.target.value)}
+              />
+            </Field>
+            <Field label="Registration link (optional)">
+              <Input
+                name="registrationLink"
+                type="url"
+                defaultValue={event?.registrationLink}
+                placeholder="https://forms.gle/..."
+              />
+            </Field>
+          </div>
           <div className="grid gap-4 md:grid-cols-2">
             <Field label="Event details">
               <textarea
@@ -224,12 +388,45 @@ function EventEditor({
               />
             </Field>
             <Field label="Rulebook">
-              <textarea
-                name="rules"
-                rows={5}
-                defaultValue={event?.rules}
-                className="w-full rounded-md border bg-background px-3 py-2 text-sm"
-              />
+              <div className="grid gap-3">
+                <textarea
+                  name="rules"
+                  rows={5}
+                  defaultValue={event?.rules}
+                  className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                  placeholder="Paste short rules or notes here."
+                />
+                <Input
+                  type="file"
+                  accept="application/pdf"
+                  disabled={uploadingRulebook}
+                  onChange={(changeEvent) => {
+                    const file = changeEvent.target.files?.[0];
+                    if (file) void uploadRulebook(file);
+                  }}
+                />
+                <input type="hidden" name="rulebookUrl" value={rulebookUrl} />
+                {uploadingRulebook ? (
+                  <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Uploading rulebook...
+                  </p>
+                ) : rulebookUrl ? (
+                  <a
+                    href={rulebookUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:underline"
+                  >
+                    <FileText className="h-4 w-4" />
+                    View uploaded PDF
+                  </a>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    Optional PDF upload, up to 15 MB.
+                  </p>
+                )}
+              </div>
             </Field>
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -259,7 +456,7 @@ function EventEditor({
                 Delete
               </Button>
             ) : null}
-            <Button type="submit">
+            <Button type="submit" disabled={uploading || uploadingRulebook}>
               <Save className="h-4 w-4" />
               {event ? "Save Event" : "Publish Event"}
             </Button>
@@ -288,8 +485,12 @@ function ResultsEditor({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Trophy className="h-5 w-5" />
-          Points & Winners: {event.name}
+          Post-Event Points & Winners: {event.name}
         </CardTitle>
+        <p className="text-sm text-muted-foreground">
+          After the event is complete, enter each house&apos;s points and position
+          here. The public leaderboard and house totals update from these rows.
+        </p>
       </CardHeader>
       <CardContent>
         <form

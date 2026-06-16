@@ -6,6 +6,7 @@ import {
   CalendarDays,
   ChevronLeft,
   Clock3,
+  FileText,
   MapPin,
   Trophy,
 } from "lucide-react";
@@ -93,10 +94,24 @@ export default async function EventDetailPage({ params }: EventPageProps) {
               <CardTitle>Rulebook</CardTitle>
               <CardDescription>Official event rules and participation instructions.</CardDescription>
             </CardHeader>
-            <CardContent>
-              <p className="whitespace-pre-line leading-7 text-muted-foreground">
-                {event.rules ?? "The official rulebook will be published shortly."}
-              </p>
+            <CardContent className="grid gap-4">
+              {event.rules ? (
+                <p className="whitespace-pre-line leading-7 text-muted-foreground">
+                  {event.rules}
+                </p>
+              ) : event.rulebookUrl ? null : (
+                <p className="leading-7 text-muted-foreground">
+                  The official rulebook will be published shortly.
+                </p>
+              )}
+              {event.rulebookUrl ? (
+                <Button asChild variant="outline" className="w-fit">
+                  <Link href={event.rulebookUrl} target="_blank" rel="noreferrer">
+                    <FileText className="h-4 w-4" />
+                    View Rulebook PDF
+                  </Link>
+                </Button>
+              ) : null}
             </CardContent>
           </Card>
 
@@ -164,11 +179,23 @@ export default async function EventDetailPage({ params }: EventPageProps) {
             </CardHeader>
             <CardContent className="grid gap-3">
               <Button asChild>
-                <Link href={PARTICIPANT_REGISTRATION_URL} target="_blank" rel="noreferrer">
-                  Participant Form
+                <Link
+                  href={event.registrationLink ?? PARTICIPANT_REGISTRATION_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {event.registrationLink ? "Register for This Event" : "Participant Form"}
                   <ArrowUpRight className="h-4 w-4" />
                 </Link>
               </Button>
+              {event.registrationLink ? (
+                <Button asChild variant="outline">
+                  <Link href={PARTICIPANT_REGISTRATION_URL} target="_blank" rel="noreferrer">
+                    General Participant Form
+                    <ArrowUpRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              ) : null}
               <Button asChild variant="outline">
                 <Link href={VOLUNTEER_REGISTRATION_URL} target="_blank" rel="noreferrer">
                   Volunteer Form

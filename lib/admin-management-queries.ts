@@ -20,7 +20,9 @@ export type AdminEvent = {
   category: string;
   description: string;
   rules: string;
+  rulebookUrl: string;
   posterUrl: string;
+  registrationLink: string;
   winnerDetails: string;
   venue: string;
   startsAt: string;
@@ -70,7 +72,7 @@ export async function getAdminEvents(): Promise<AdminEvent[]> {
   const { data: events } = await supabase
     .from("events")
     .select(
-      "id, slug, name, category, description, rules, poster_url, winner_details, venue, starts_at, ends_at, status",
+      "id, slug, name, category, description, rules, rulebook_url, poster_url, registration_link, winner_details, venue, starts_at, ends_at, status",
     )
     .order("starts_at", { ascending: true });
 
@@ -81,7 +83,9 @@ export async function getAdminEvents(): Promise<AdminEvent[]> {
       category: event.category,
       description: event.description ?? "",
       rules: event.rules ?? "",
+      rulebookUrl: event.rulebook_url ?? "",
       posterUrl: event.poster_url ?? "",
+      registrationLink: event.registration_link ?? "",
       winnerDetails: event.winner_details ?? "",
       venue: event.venue,
       startsAt: event.starts_at,

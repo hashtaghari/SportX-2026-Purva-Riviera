@@ -62,7 +62,9 @@ Run, in order:
 4. `supabase/migrations/004_assign_blocks_to_houses.sql`
 5. `supabase/migrations/005_event_broadcast_fields.sql`
 6. `supabase/migrations/006_house_branding.sql`
-7. `supabase/seed/001_seed_championship.sql`
+7. `supabase/migrations/007_event_registration_link.sql`
+8. `supabase/migrations/008_event_rulebook_url.sql`
+9. `supabase/seed/001_seed_championship.sql`
 
 The seed contains Red Bulls, Green Eagles, Yellow Tigers, and Blue Sharks plus
 the 15 real block names.

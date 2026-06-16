@@ -11,12 +11,14 @@ import { Label } from "@/components/ui/label";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 type AuthState = "loading" | "disconnected" | "signed-out" | "unauthorized" | "admin";
+type LoginNotice = { type: "success" | "error"; message: string } | null;
 
 export function AdminSessionGate({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>("loading");
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [notice, setNotice] = useState<LoginNotice>(null);
 
   async function checkAccess() {
     const supabase = createSupabaseBrowserClient();
@@ -42,22 +44,34 @@ export function AdminSessionGate({ children }: { children: React.ReactNode }) {
   async function signIn(form: HTMLFormElement) {
     const supabase = createSupabaseBrowserClient();
     if (!supabase) {
+      setNotice({ type: "error", message: "Supabase is not connected yet." });
       toast.error("Connect Supabase before signing in.");
       return;
     }
 
     setSubmitting(true);
+    setNotice(null);
+    const normalizedUsername = username.trim().toLowerCase();
+    const email = normalizedUsername.includes("@")
+      ? normalizedUsername
+      : `${normalizedUsername}@sportx2026.com`;
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       setSubmitting(false);
+      setNotice({
+        type: "error",
+        message: "Login failed. Check the username and password exactly, then try again.",
+      });
       toast.error(error.message);
       return;
     }
 
+    setNotice({ type: "success", message: "Signed in. Loading admin dashboard..." });
+    toast.success("Signed in.");
     await checkAccess();
     setSubmitting(false);
     form.reset();
-    window.location.reload();
+    window.setTimeout(() => window.location.reload(), 300);
   }
 
   async function signOut() {
@@ -97,6 +111,18 @@ export function AdminSessionGate({ children }: { children: React.ReactNode }) {
                 to add it to admin_profiles.
               </p>
             ) : null}
+            {notice ? (
+              <div
+                className={
+                  notice.type === "success"
+                    ? "mb-5 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-sm text-emerald-700 dark:text-emerald-300"
+                    : "mb-5 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+                }
+                role="status"
+              >
+                {notice.message}
+              </div>
+            ) : null}
             <form
               className="grid gap-4"
               onSubmit={(event) => {
@@ -105,14 +131,22 @@ export function AdminSessionGate({ children }: { children: React.ReactNode }) {
               }}
             >
               <div className="grid gap-2">
-                <Label htmlFor="admin-email">Email</Label>
+                <Label htmlFor="admin-username">Username</Label>
                 <Input
-                  id="admin-email"
-                  type="email"
+                  id="admin-username"
+                  type="text"
                   required
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
+                  autoComplete="username"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  value={username}
+                  onChange={(event) => setUsername(event.target.value)}
                 />
+                <p className="text-xs text-muted-foreground">
+                  Use <code>hariadminaccess</code> or <code>sportx26admin</code>.
+                  No email address is needed.
+                </p>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="admin-password">Password</Label>
@@ -120,6 +154,7 @@ export function AdminSessionGate({ children }: { children: React.ReactNode }) {
                   id="admin-password"
                   type="password"
                   required
+                  autoComplete="current-password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                 />
