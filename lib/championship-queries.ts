@@ -11,6 +11,7 @@ import {
   RECENT_RESULTS,
 } from "@/data/championship";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { normalizePosterUrl } from "@/lib/url-utils";
 import type {
   ChampionshipEvent,
   ChampionshipStats,
@@ -120,7 +121,7 @@ export async function getChampionshipEvents(): Promise<ChampionshipEvent[]> {
     status: event.status as ChampionshipEvent["status"],
     registrationStatus:
       event.registration_status as ChampionshipEvent["registrationStatus"],
-    posterUrl: event.poster_url,
+    posterUrl: normalizePosterUrl(event.poster_url),
     registrationLink: event.registration_link,
   }));
 }
@@ -183,7 +184,7 @@ export async function getEventDetail(slug: string): Promise<EventDetail | null> 
     status: event.status as ChampionshipEvent["status"],
     registrationStatus:
       event.registration_status as ChampionshipEvent["registrationStatus"],
-    posterUrl: event.poster_url,
+    posterUrl: normalizePosterUrl(event.poster_url),
     registrationLink: event.registration_link,
     description: event.description,
     rules: event.rules,

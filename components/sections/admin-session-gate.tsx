@@ -185,10 +185,6 @@ export function AdminSessionGate({ children }: { children: React.ReactNode }) {
                   value={username}
                   onChange={(event) => setUsername(event.target.value)}
                 />
-                <p className="text-xs text-muted-foreground">
-                  Use <code>hariadminaccess</code> or <code>sportx26admin</code>.
-                  No email address is needed.
-                </p>
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="admin-password">Password</Label>

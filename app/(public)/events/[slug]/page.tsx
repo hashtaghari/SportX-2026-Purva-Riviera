@@ -43,6 +43,35 @@ export default async function EventDetailPage({ params }: EventPageProps) {
   const { slug } = await params;
   const event = await getEventDetail(slug);
   if (!event) notFound();
+  const posterImage = event.posterUrl ?? "/images/sportx-championship-collage.png";
+
+  const posterHero = (
+    <div
+      className={`relative min-h-[320px] bg-muted bg-cover bg-center sm:min-h-[460px] ${
+        event.posterUrl ? "cursor-zoom-in" : ""
+      }`}
+      style={{
+        backgroundImage: `linear-gradient(to top, rgba(2,6,23,.88), rgba(2,6,23,.12)), url(${posterImage})`,
+      }}
+    >
+      <div className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-8">
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="outline" className="border-white/35 text-white">
+            {event.category}
+          </Badge>
+          <Badge variant="outline" className="border-white/35 text-white">
+            {event.status}
+          </Badge>
+        </div>
+        <h1 className="mt-4 text-4xl font-semibold tracking-normal sm:text-6xl">
+          {event.name}
+        </h1>
+        {event.posterUrl ? (
+          <p className="mt-3 text-sm text-white/80">Click poster to view full size</p>
+        ) : null}
+      </div>
+    </div>
+  );
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
@@ -54,26 +83,13 @@ export default async function EventDetailPage({ params }: EventPageProps) {
       </Button>
 
       <section className="overflow-hidden rounded-lg border bg-card">
-        <div
-          className="relative min-h-[320px] bg-muted bg-cover bg-center sm:min-h-[460px]"
-          style={{
-            backgroundImage: `linear-gradient(to top, rgba(2,6,23,.88), rgba(2,6,23,.12)), url(${event.posterUrl ?? "/images/sportx-championship-collage.png"})`,
-          }}
-        >
-          <div className="absolute inset-x-0 bottom-0 p-5 text-white sm:p-8">
-            <div className="flex flex-wrap gap-2">
-              <Badge variant="outline" className="border-white/35 text-white">
-                {event.category}
-              </Badge>
-              <Badge variant="outline" className="border-white/35 text-white">
-                {event.status}
-              </Badge>
-            </div>
-            <h1 className="mt-4 text-4xl font-semibold tracking-normal sm:text-6xl">
-              {event.name}
-            </h1>
-          </div>
-        </div>
+        {event.posterUrl ? (
+          <Link href={event.posterUrl} target="_blank" rel="noreferrer">
+            {posterHero}
+          </Link>
+        ) : (
+          posterHero
+        )}
       </section>
 
       <section className="mt-6 grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">

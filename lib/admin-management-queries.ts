@@ -1,4 +1,5 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { normalizePosterUrl } from "@/lib/url-utils";
 
 export type AdminHouseOption = {
   id: string;
@@ -84,7 +85,7 @@ export async function getAdminEvents(): Promise<AdminEvent[]> {
       description: event.description ?? "",
       rules: event.rules ?? "",
       rulebookUrl: event.rulebook_url ?? "",
-      posterUrl: event.poster_url ?? "",
+      posterUrl: normalizePosterUrl(event.poster_url),
       registrationLink: event.registration_link ?? "",
       winnerDetails: event.winner_details ?? "",
       venue: event.venue,

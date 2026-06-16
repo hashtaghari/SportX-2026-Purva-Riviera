@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import { CountdownCard } from "@/components/sections/countdown-card";
+import { HeroSportsCarousel } from "@/components/sections/hero-sports-carousel";
 import { PointsChart } from "@/components/sections/points-chart";
 import { StandingsTable } from "@/components/sections/standings-table";
 import { Badge } from "@/components/ui/badge";
@@ -111,14 +112,7 @@ export default async function HomePage() {
 
           <div className="relative z-10">
             <div className="overflow-hidden rounded-lg border bg-card shadow-2xl shadow-slate-950/15">
-              <Image
-                src="/images/sportx-championship-collage.png"
-                alt="SportX 2026 championship sports collage"
-                width={1200}
-                height={900}
-                priority
-                className="aspect-[4/3] w-full object-cover"
-              />
+              <HeroSportsCarousel />
               {nextEvent ? (
                 <div className="grid gap-4 p-4 sm:p-5">
                   <div className="flex items-center justify-between gap-4">
