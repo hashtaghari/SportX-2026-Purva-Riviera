@@ -40,6 +40,28 @@ function withUploadTimeout<T>(promise: Promise<T>) {
   ]);
 }
 
+function getGoogleDriveFileId(url: string) {
+  const trimmed = url.trim();
+  if (!trimmed.includes("drive.google.com")) return null;
+
+  const pathMatch = trimmed.match(/\/(?:file\/d|document\/d|presentation\/d)\/([^/?#]+)/);
+  if (pathMatch?.[1]) return pathMatch[1];
+
+  try {
+    const parsed = new URL(trimmed);
+    return parsed.searchParams.get("id");
+  } catch {
+    return null;
+  }
+}
+
+function normalizePosterUrl(url: string) {
+  const trimmed = url.trim();
+  const driveId = getGoogleDriveFileId(trimmed);
+  if (!driveId) return trimmed;
+  return `https://drive.google.com/thumbnail?id=${driveId}&sz=w1600`;
+}
+
 export function AdminEventsManager({
   events,
   houses,
@@ -78,7 +100,8 @@ export function AdminEventsManager({
       description: String(values.get("description") ?? "").trim() || null,
       rules: String(values.get("rules") ?? "").trim() || null,
       rulebook_url: String(values.get("rulebookUrl") ?? "").trim() || null,
-      poster_url: String(values.get("posterUrl") ?? "").trim() || null,
+      poster_url:
+        normalizePosterUrl(String(values.get("posterUrl") ?? "")) || null,
       registration_link:
         String(values.get("registrationLink") ?? "").trim() || null,
       winner_details: String(values.get("winnerDetails") ?? "").trim() || null,
@@ -389,9 +412,13 @@ function EventEditor({
               <Input
                 type="url"
                 value={posterUrl}
-                placeholder="Or paste an image URL"
+                placeholder="Paste direct image URL or public Google Drive image link"
+                onBlur={() => setPosterUrl((value) => normalizePosterUrl(value))}
                 onChange={(changeEvent) => setPosterUrl(changeEvent.target.value)}
               />
+              <p className="text-xs text-muted-foreground">
+                Google Drive images work if sharing is set to anyone with the link.
+              </p>
             </Field>
             <Field label="Registration link (optional)">
               <Input
@@ -428,6 +455,12 @@ function EventEditor({
                     const file = changeEvent.target.files?.[0];
                     if (file) void uploadRulebook(file);
                   }}
+                />
+                <Input
+                  type="url"
+                  value={rulebookUrl}
+                  placeholder="Or paste a PDF / Google Drive rulebook link"
+                  onChange={(changeEvent) => setRulebookUrl(changeEvent.target.value.trim())}
                 />
                 <input type="hidden" name="rulebookUrl" value={rulebookUrl} />
                 {uploadingRulebook ? (
