@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 
+import { AdminLogoutButton } from "@/components/sections/admin-logout-button";
 import { AdminSessionGate } from "@/components/sections/admin-session-gate";
 import { Button } from "@/components/ui/button";
 
@@ -23,6 +24,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Button asChild variant="outline" size="sm">
               <Link href="/">Public Site</Link>
             </Button>
+            <AdminLogoutButton />
           </div>
         </div>
       </header>
