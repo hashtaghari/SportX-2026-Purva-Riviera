@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+
 import { ThemeScript } from "@/components/layout/theme-script";
 import "./globals.css";
 
@@ -48,6 +50,7 @@ export default function RootLayout({
       <body className="min-h-full bg-background text-foreground">
         <ThemeScript />
         {children}
+        <Analytics />
       </body>
     </html>
   );
