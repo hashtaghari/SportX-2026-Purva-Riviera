@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const slides = [
   {
@@ -24,17 +24,68 @@ const slides = [
 
 export function HeroSportsCarousel() {
   const [activeSlide, setActiveSlide] = useState(0);
+  const dragStartX = useRef<number | null>(null);
+  const dragStartY = useRef<number | null>(null);
+  const isDragging = useRef(false);
+
+  function showNextSlide() {
+    setActiveSlide((current) => (current + 1) % slides.length);
+  }
+
+  function showPreviousSlide() {
+    setActiveSlide((current) => (current - 1 + slides.length) % slides.length);
+  }
 
   useEffect(() => {
     const timer = window.setInterval(() => {
-      setActiveSlide((current) => (current + 1) % slides.length);
+      showNextSlide();
     }, 4200);
 
     return () => window.clearInterval(timer);
   }, []);
 
+  function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
+    dragStartX.current = event.clientX;
+    dragStartY.current = event.clientY;
+    isDragging.current = true;
+  }
+
+  function handlePointerUp(event: React.PointerEvent<HTMLDivElement>) {
+    if (!isDragging.current || dragStartX.current === null || dragStartY.current === null) {
+      return;
+    }
+
+    const deltaX = event.clientX - dragStartX.current;
+    const deltaY = event.clientY - dragStartY.current;
+    dragStartX.current = null;
+    dragStartY.current = null;
+    isDragging.current = false;
+
+    if (Math.abs(deltaX) < 48 || Math.abs(deltaX) < Math.abs(deltaY) * 1.15) {
+      return;
+    }
+
+    if (deltaX < 0) {
+      showNextSlide();
+    } else {
+      showPreviousSlide();
+    }
+  }
+
+  function handlePointerCancel() {
+    dragStartX.current = null;
+    dragStartY.current = null;
+    isDragging.current = false;
+  }
+
   return (
-    <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+    <div
+      className="relative aspect-[4/3] touch-pan-y select-none overflow-hidden bg-muted"
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerCancel}
+      onPointerLeave={handlePointerCancel}
+    >
       {slides.map((slide, index) => (
         <Image
           key={slide.src}
@@ -55,7 +106,10 @@ export function HeroSportsCarousel() {
             type="button"
             aria-label={`Show sports image ${index + 1}`}
             aria-pressed={index === activeSlide}
-            onClick={() => setActiveSlide(index)}
+            onClick={(event) => {
+              event.stopPropagation();
+              setActiveSlide(index);
+            }}
             className={`h-2.5 rounded-full transition-all ${
               index === activeSlide ? "w-8 bg-white" : "w-2.5 bg-white/55"
             }`}
