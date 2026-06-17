@@ -30,6 +30,7 @@ import {
   getHouseStandings,
   getRecentResults,
 } from "@/lib/championship-queries";
+import { formatEventDateTime, formatEventShortDate } from "@/lib/date-utils";
 import {
   PARTICIPANT_REGISTRATION_URL,
   VOLUNTEER_REGISTRATION_URL,
@@ -121,7 +122,7 @@ export default async function HomePage() {
                       <p className="font-semibold">{nextEvent.name}</p>
                     </div>
                     <Badge variant="outline">
-                      {new Date(nextEvent.startsAt).toLocaleDateString("en-IN")}
+                      {formatEventShortDate(nextEvent.startsAt)}
                     </Badge>
                   </div>
                   <CountdownCard targetDate={nextEvent.startsAt} />
@@ -195,7 +196,7 @@ export default async function HomePage() {
                   </div>
                   <p className="mt-3 flex items-start gap-2 text-sm text-muted-foreground">
                     <CalendarDays className="mt-0.5 h-4 w-4 shrink-0" />
-                    {new Date(event.startsAt).toLocaleString("en-IN")}
+                    {formatEventDateTime(event.startsAt)}
                   </p>
                   <p className="mt-3 text-sm font-medium text-accent">
                     View event details <ArrowRight className="ml-1 inline h-3.5 w-3.5" />

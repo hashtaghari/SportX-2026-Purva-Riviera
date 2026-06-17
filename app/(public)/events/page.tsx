@@ -5,6 +5,7 @@ import { ArrowRight, CalendarDays, MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getChampionshipEvents } from "@/lib/championship-queries";
+import { formatEventDateTime } from "@/lib/date-utils";
 
 export const metadata: Metadata = {
   title: "Events",
@@ -48,7 +49,7 @@ export default async function EventsPage() {
                 {event.venue}
               </p>
               <p className="mt-2 text-sm">
-                {new Date(event.startsAt).toLocaleString("en-IN")}
+                {formatEventDateTime(event.startsAt)}
               </p>
               <div className="mt-5 flex items-center justify-between rounded-md border px-4 py-2 text-sm font-medium">
                 View Event Details

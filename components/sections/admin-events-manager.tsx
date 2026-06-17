@@ -24,6 +24,7 @@ import type {
   AdminEventScore,
   AdminHouseOption,
 } from "@/lib/admin-management-queries";
+import { eventDateTimeInputToIso, toEventDateTimeInput } from "@/lib/date-utils";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { normalizePosterUrl } from "@/lib/url-utils";
 
@@ -67,7 +68,10 @@ export function AdminEventsManager({
     const startsAt = String(values.get("startsAt") ?? "");
     const endsAt = String(values.get("endsAt") ?? "");
 
-    if (endsAt && new Date(endsAt) < new Date(startsAt)) {
+    const startsAtIso = eventDateTimeInputToIso(startsAt);
+    const endsAtIso = endsAt ? eventDateTimeInputToIso(endsAt) : null;
+
+    if (endsAtIso && new Date(endsAtIso) < new Date(startsAtIso)) {
       toast.error("Event end time cannot be before its start time.");
       return;
     }
@@ -85,8 +89,8 @@ export function AdminEventsManager({
         String(values.get("registrationLink") ?? "").trim() || null,
       winner_details: String(values.get("winnerDetails") ?? "").trim() || null,
       venue: String(values.get("venue") ?? "").trim(),
-      starts_at: new Date(startsAt).toISOString(),
-      ends_at: endsAt ? new Date(endsAt).toISOString() : null,
+      starts_at: startsAtIso,
+      ends_at: endsAtIso,
       status: String(values.get("status")) as AdminEvent["status"],
       registration_status: "closed" as const,
     };
@@ -467,10 +471,10 @@ function EventEditor({
           </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <Field label="Starts">
-              <Input name="startsAt" type="datetime-local" required defaultValue={toLocalInput(event?.startsAt)} />
+              <Input name="startsAt" type="datetime-local" required defaultValue={toEventDateTimeInput(event?.startsAt)} />
             </Field>
             <Field label="Ends">
-              <Input name="endsAt" type="datetime-local" defaultValue={toLocalInput(event?.endsAt)} />
+              <Input name="endsAt" type="datetime-local" defaultValue={toEventDateTimeInput(event?.endsAt)} />
             </Field>
             <Field label="Event status">
               <Select name="status" defaultValue={event?.status ?? "upcoming"} options={["upcoming", "ongoing", "completed", "archived"]} />
@@ -588,11 +592,4 @@ function Select({ name, defaultValue, options }: { name: string; defaultValue: s
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return <div className="grid gap-2"><Label>{label}</Label>{children}</div>;
-}
-
-function toLocalInput(value?: string) {
-  if (!value) return "";
-  const date = new Date(value);
-  const offset = date.getTimezoneOffset() * 60_000;
-  return new Date(date.getTime() - offset).toISOString().slice(0, 16);
 }

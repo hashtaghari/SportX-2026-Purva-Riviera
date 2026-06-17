@@ -21,6 +21,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getEventDetail } from "@/lib/championship-queries";
+import { formatEventDate, formatEventTime } from "@/lib/date-utils";
 import {
   PARTICIPANT_REGISTRATION_URL,
   VOLUNTEER_REGISTRATION_URL,
@@ -182,8 +183,8 @@ export default async function EventDetailPage({ params }: EventPageProps) {
               <CardTitle>Schedule</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-4 text-sm">
-              <Info icon={CalendarDays} label="Date" value={new Date(event.startsAt).toLocaleDateString("en-IN", { dateStyle: "full" })} />
-              <Info icon={Clock3} label="Start time" value={new Date(event.startsAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })} />
+              <Info icon={CalendarDays} label="Date" value={formatEventDate(event.startsAt)} />
+              <Info icon={Clock3} label="Start time" value={formatEventTime(event.startsAt)} />
               <Info icon={MapPin} label="Venue" value={event.venue} />
             </CardContent>
           </Card>
