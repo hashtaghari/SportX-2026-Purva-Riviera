@@ -64,7 +64,8 @@ Run, in order:
 6. `supabase/migrations/006_house_branding.sql`
 7. `supabase/migrations/007_event_registration_link.sql`
 8. `supabase/migrations/008_event_rulebook_url.sql`
-9. `supabase/seed/001_seed_championship.sql`
+9. `supabase/migrations/009_gallery_sections.sql`
+10. `supabase/seed/001_seed_championship.sql`
 
 The seed contains Red Bulls, Green Eagles, Yellow Tigers, and Blue Sharks plus
 the 15 real block names.
@@ -79,5 +80,11 @@ events, scores, participants, announcements, results, or gallery entries are bun
 Public participant and volunteer registrations are collected through the two Google
 Forms linked from `/register`. Admins use `/admin/events` to publish event posters,
 date/time, venue, rulebooks, winner details, and house points.
+
+Admins use `/admin/gallery` to create named gallery sections with up to ten photos
+per section. Public visitors can view sections at `/gallery`; the homepage carousel
+uses four random gallery photos and falls back to built-in sports images while the
+gallery is empty. Admins use `/admin/announcements` to publish homepage Championship
+Pulse updates.
 
 Auth, RLS, storage policies, and first-admin setup are documented in `supabase/README.md`.

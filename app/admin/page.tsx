@@ -1,6 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Building2, CalendarPlus, ClipboardList, Medal, Trophy, Users } from "lucide-react";
+import {
+  Building2,
+  CalendarPlus,
+  ClipboardList,
+  Images,
+  Medal,
+  Megaphone,
+  Trophy,
+  Users,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -75,6 +84,18 @@ export default async function AdminDashboardPage() {
               <Link href="/admin/events">
                 <CalendarPlus className="h-4 w-4" />
                 Create and publish events
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="justify-start">
+              <Link href="/admin/gallery">
+                <Images className="h-4 w-4" />
+                Publish gallery sections
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="justify-start">
+              <Link href="/admin/announcements">
+                <Megaphone className="h-4 w-4" />
+                Post Championship Pulse updates
               </Link>
             </Button>
             <p className="rounded-md border border-dashed p-3">

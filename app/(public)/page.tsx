@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/card";
 import {
   getAnnouncements,
+  getCarouselGalleryImages,
   getChampionshipEvents,
   getChampionshipStats,
   getFeaturedGalleryImages,
@@ -38,7 +39,7 @@ import {
 import { SportXLogo } from "@/components/brand/sportx-logo";
 
 export default async function HomePage() {
-  const [stats, standings, events, announcements, results, galleryImages] =
+  const [stats, standings, events, announcements, results, galleryImages, carouselImages] =
     await Promise.all([
       getChampionshipStats(),
       getHouseStandings(),
@@ -46,6 +47,7 @@ export default async function HomePage() {
       getAnnouncements(),
       getRecentResults(),
       getFeaturedGalleryImages(),
+      getCarouselGalleryImages(),
     ]);
 
   const pinnedAnnouncement = announcements[0];
@@ -113,7 +115,12 @@ export default async function HomePage() {
 
           <div className="relative z-10">
             <div className="overflow-hidden rounded-lg border bg-card shadow-2xl shadow-slate-950/15">
-              <HeroSportsCarousel />
+              <HeroSportsCarousel
+                slides={carouselImages.map((image) => ({
+                  src: image.src,
+                  alt: image.alt,
+                }))}
+              />
               {nextEvent ? (
                 <div className="grid gap-4 p-4 sm:p-5">
                   <div className="flex items-center justify-between gap-4">

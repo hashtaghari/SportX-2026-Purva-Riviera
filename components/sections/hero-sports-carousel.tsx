@@ -1,9 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-const slides = [
+type HeroSlide = {
+  src: string;
+  alt: string;
+};
+
+const fallbackSlides: HeroSlide[] = [
   {
     src: "/images/sportx-championship-collage.png",
     alt: "SportX 2026 championship collage",
@@ -22,19 +27,20 @@ const slides = [
   },
 ];
 
-export function HeroSportsCarousel() {
+export function HeroSportsCarousel({ slides = fallbackSlides }: { slides?: HeroSlide[] }) {
+  const carouselSlides = slides.length ? slides : fallbackSlides;
   const [activeSlide, setActiveSlide] = useState(0);
   const dragStartX = useRef<number | null>(null);
   const dragStartY = useRef<number | null>(null);
   const isDragging = useRef(false);
 
-  function showNextSlide() {
-    setActiveSlide((current) => (current + 1) % slides.length);
-  }
+  const showNextSlide = useCallback(() => {
+    setActiveSlide((current) => (current + 1) % carouselSlides.length);
+  }, [carouselSlides.length]);
 
-  function showPreviousSlide() {
-    setActiveSlide((current) => (current - 1 + slides.length) % slides.length);
-  }
+  const showPreviousSlide = useCallback(() => {
+    setActiveSlide((current) => (current - 1 + carouselSlides.length) % carouselSlides.length);
+  }, [carouselSlides.length]);
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -42,7 +48,11 @@ export function HeroSportsCarousel() {
     }, 4200);
 
     return () => window.clearInterval(timer);
-  }, []);
+  }, [carouselSlides.length, showNextSlide]);
+
+  useEffect(() => {
+    setActiveSlide(0);
+  }, [carouselSlides.length]);
 
   function handlePointerDown(event: React.PointerEvent<HTMLDivElement>) {
     dragStartX.current = event.clientX;
@@ -86,7 +96,7 @@ export function HeroSportsCarousel() {
       onPointerCancel={handlePointerCancel}
       onPointerLeave={handlePointerCancel}
     >
-      {slides.map((slide, index) => (
+      {carouselSlides.map((slide, index) => (
         <Image
           key={slide.src}
           src={slide.src}
@@ -100,7 +110,7 @@ export function HeroSportsCarousel() {
         />
       ))}
       <div className="absolute inset-x-0 bottom-0 flex justify-center gap-2 bg-gradient-to-t from-black/45 to-transparent p-4">
-        {slides.map((slide, index) => (
+        {carouselSlides.map((slide, index) => (
           <button
             key={slide.src}
             type="button"

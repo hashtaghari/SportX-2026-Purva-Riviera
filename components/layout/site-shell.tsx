@@ -18,17 +18,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
               registrations, schedules, announcements, and results.
             </p>
             <p className="mt-4 text-xs text-muted-foreground/70">
-              Made with{" "}
-              <Link
-                href="https://emojipedia.org/red-heart"
-                target="_blank"
-                rel="noreferrer"
-                className="hover:text-foreground"
-                aria-label="red heart"
-              >
-                ❤️
-              </Link>{" "}
-              by{" "}
+              Made with ❤️ by{" "}
               <Link
                 href="https://www.linkedin.com/in/hashtaghari/"
                 target="_blank"

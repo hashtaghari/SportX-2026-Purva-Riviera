@@ -10,6 +10,7 @@ truncate table
   public.event_registration_settings,
   public.activity_logs,
   public.gallery_images,
+  public.gallery_sections,
   public.announcements,
   public.brackets,
   public.matches,

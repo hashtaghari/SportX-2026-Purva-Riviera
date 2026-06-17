@@ -39,6 +39,35 @@ export type AdminEventScore = {
   resultLabel: string;
 };
 
+export type AdminGallerySection = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  displayOrder: number;
+  imageCount: number;
+};
+
+export type AdminGalleryImage = {
+  id: string;
+  sectionId: string | null;
+  src: string;
+  storagePath: string;
+  altText: string;
+  caption: string;
+  featured: boolean;
+  createdAt: string;
+};
+
+export type AdminAnnouncement = {
+  id: string;
+  title: string;
+  body: string;
+  pinned: boolean;
+  publishedAt: string;
+  expiresAt: string;
+};
+
 export async function getAdminBlocksData(): Promise<{
   houses: AdminHouseOption[];
   blocks: AdminBlock[];
@@ -109,5 +138,74 @@ export async function getAdminEventScores(): Promise<AdminEventScore[]> {
     points: score.points,
     position: score.position,
     resultLabel: score.result_label ?? "",
+  }));
+}
+
+export async function getAdminGalleryData(): Promise<{
+  sections: AdminGallerySection[];
+  images: AdminGalleryImage[];
+}> {
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) return { sections: [], images: [] };
+
+  const [{ data: sections }, { data: images }] = await Promise.all([
+    supabase
+      .from("gallery_sections")
+      .select("id, name, slug, description, display_order")
+      .order("display_order", { ascending: true })
+      .order("name", { ascending: true }),
+    supabase
+      .from("gallery_images")
+      .select("id, section_id, storage_bucket, storage_path, alt_text, caption, featured, created_at")
+      .order("created_at", { ascending: false }),
+  ]);
+
+  const mappedImages = (images ?? []).map((image) => {
+    const { data: publicUrl } = supabase.storage
+      .from(String(image.storage_bucket ?? "sportx-gallery"))
+      .getPublicUrl(String(image.storage_path));
+
+    return {
+      id: String(image.id),
+      sectionId: image.section_id ? String(image.section_id) : null,
+      src: publicUrl.publicUrl,
+      storagePath: String(image.storage_path),
+      altText: String(image.alt_text ?? "SportX gallery image"),
+      caption: String(image.caption ?? ""),
+      featured: Boolean(image.featured),
+      createdAt: String(image.created_at),
+    };
+  });
+
+  return {
+    sections: (sections ?? []).map((section) => ({
+      id: String(section.id),
+      name: String(section.name),
+      slug: String(section.slug),
+      description: String(section.description ?? ""),
+      displayOrder: Number(section.display_order ?? 0),
+      imageCount: mappedImages.filter((image) => image.sectionId === String(section.id)).length,
+    })),
+    images: mappedImages,
+  };
+}
+
+export async function getAdminAnnouncements(): Promise<AdminAnnouncement[]> {
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) return [];
+
+  const { data } = await supabase
+    .from("announcements")
+    .select("id, title, body, pinned, published_at, expires_at")
+    .order("pinned", { ascending: false })
+    .order("published_at", { ascending: false });
+
+  return (data ?? []).map((announcement) => ({
+    id: String(announcement.id),
+    title: String(announcement.title),
+    body: String(announcement.body),
+    pinned: Boolean(announcement.pinned),
+    publishedAt: announcement.published_at ? String(announcement.published_at) : "",
+    expiresAt: announcement.expires_at ? String(announcement.expires_at) : "",
   }));
 }

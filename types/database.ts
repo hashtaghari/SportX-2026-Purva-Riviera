@@ -419,6 +419,12 @@ export type Database = {
         Update: Record<string, Json | undefined>;
         Relationships: Relationship[];
       };
+      gallery_sections: {
+        Row: Record<string, Json>;
+        Insert: Record<string, Json | undefined>;
+        Update: Record<string, Json | undefined>;
+        Relationships: Relationship[];
+      };
       activity_logs: {
         Row: Record<string, Json>;
         Insert: Record<string, Json | undefined>;

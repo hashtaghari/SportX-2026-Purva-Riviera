@@ -39,7 +39,7 @@ Admins can:
 - Add/edit/delete event scores, winner details, and medals
 - Manage matches and brackets
 - Manage announcements
-- Insert/update/delete gallery metadata and gallery storage objects
+- Create gallery sections and insert/update/delete gallery metadata and gallery storage objects
 - Read and create activity logs
 
 ## Creating The First Admin
@@ -92,6 +92,9 @@ For a database that previously used the sample seed:
 7. Create and publish real events from `/admin/events`.
 8. Upload event posters and publish schedules, venues, rulebooks, optional
    registration links, winner details, and house points from `/admin/events`.
+9. Create gallery sections and upload up to ten photos per section from
+   `/admin/gallery`.
+10. Publish Championship Pulse updates from `/admin/announcements`.
 
 The cleanup script retains `admin_profiles` and the four houses, but removes
 championship operational data. Review it before running it against any database
@@ -136,6 +139,9 @@ winner/result details at `/admin/events`.
 Apply `005_event_broadcast_fields.sql`, `007_event_registration_link.sql`, and
 `008_event_rulebook_url.sql` after the earlier migrations to add event poster URLs,
 winner details, optional registration links, and optional PDF rulebooks.
+
+Apply `009_gallery_sections.sql` to add named public gallery sections and the
+database trigger that enforces a maximum of ten photos per section.
 
 ## Legacy Team Registration Schema
 

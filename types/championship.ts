@@ -105,6 +105,15 @@ export type GalleryImage = {
   featured: boolean;
 };
 
+export type GallerySection = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  imageCount: number;
+  images: GalleryImage[];
+};
+
 export type MedalStanding = {
   rank: number;
   houseId: string;

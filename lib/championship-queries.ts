@@ -17,6 +17,7 @@ import type {
   ChampionshipStats,
   Announcement,
   GalleryImage,
+  GallerySection,
   House,
   HouseDetail,
   HouseStanding,
@@ -413,6 +414,83 @@ export async function getFeaturedGalleryImages(): Promise<GalleryImage[]> {
       caption: String(image.caption ?? "SportX 2026 moment"),
       houseColor: house?.color ?? "#2563eb",
       featured: Boolean(image.featured),
+    };
+  });
+}
+
+function shuffleGalleryImages(images: GalleryImage[]) {
+  return [...images].sort(() => Math.random() - 0.5);
+}
+
+function mapGalleryRowsToImages(
+  rows: Array<Record<string, unknown>>,
+  supabase: NonNullable<Awaited<ReturnType<typeof createSupabaseServerClient>>>,
+): GalleryImage[] {
+  return rows.map((image) => {
+    const { data: publicUrl } = supabase.storage
+      .from(String(image.storage_bucket ?? "sportx-gallery"))
+      .getPublicUrl(String(image.storage_path));
+    const house = image.houses as { color?: string } | null;
+
+    return {
+      id: String(image.id),
+      src: publicUrl.publicUrl,
+      alt: String(image.alt_text ?? "SportX 2026 gallery image"),
+      caption: String(image.caption ?? "SportX 2026 moment"),
+      houseColor: house?.color ?? "#2563eb",
+      featured: Boolean(image.featured),
+    };
+  });
+}
+
+export async function getCarouselGalleryImages(): Promise<GalleryImage[]> {
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from("gallery_images")
+    .select("id, storage_bucket, storage_path, alt_text, caption, featured, houses(color)")
+    .order("created_at", { ascending: false })
+    .limit(30);
+
+  if (error || !data?.length) return [];
+
+  return shuffleGalleryImages(mapGalleryRowsToImages(data, supabase)).slice(0, 4);
+}
+
+export async function getGallerySections(): Promise<GallerySection[]> {
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) return [];
+
+  const [{ data: sections, error: sectionsError }, { data: images, error: imagesError }] =
+    await Promise.all([
+      supabase
+        .from("gallery_sections")
+        .select("id, name, slug, description, display_order")
+        .order("display_order", { ascending: true })
+        .order("name", { ascending: true }),
+      supabase
+        .from("gallery_images")
+        .select("id, section_id, storage_bucket, storage_path, alt_text, caption, featured, houses(color)")
+        .order("created_at", { ascending: false }),
+    ]);
+
+  if (sectionsError || imagesError || !sections?.length) return [];
+
+  const imageRows = images ?? [];
+
+  return sections.map((section) => {
+    const sectionImages = imageRows.filter(
+      (image) => String(image.section_id ?? "") === String(section.id),
+    );
+
+    return {
+      id: String(section.id),
+      name: String(section.name),
+      slug: String(section.slug),
+      description: section.description ? String(section.description) : null,
+      imageCount: sectionImages.length,
+      images: mapGalleryRowsToImages(sectionImages, supabase),
     };
   });
 }
