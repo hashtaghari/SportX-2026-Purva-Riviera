@@ -1,4 +1,5 @@
 import { Toaster } from "sonner";
+import Link from "next/link";
 
 import { SiteHeader } from "@/components/layout/site-header";
 import { SportXLogo } from "@/components/brand/sportx-logo";
@@ -15,6 +16,27 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
             <p className="mt-2 max-w-xl text-muted-foreground">
               Purva Riviera Inter-House Sports Championship: live standings,
               registrations, schedules, announcements, and results.
+            </p>
+            <p className="mt-4 text-xs text-muted-foreground/70">
+              Made with{" "}
+              <Link
+                href="https://emojipedia.org/red-heart"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-foreground"
+                aria-label="red heart"
+              >
+                ❤️
+              </Link>{" "}
+              by{" "}
+              <Link
+                href="https://www.linkedin.com/in/hashtaghari/"
+                target="_blank"
+                rel="noreferrer"
+                className="font-medium hover:text-foreground hover:underline"
+              >
+                Hari
+              </Link>
             </p>
           </div>
           <div className="grid gap-3 md:justify-items-end">
