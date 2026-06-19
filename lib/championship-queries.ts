@@ -455,7 +455,7 @@ export async function getCarouselGalleryImages(): Promise<GalleryImage[]> {
 
   if (error || !data?.length) return [];
 
-  return shuffleGalleryImages(mapGalleryRowsToImages(data, supabase)).slice(0, 4);
+  return shuffleGalleryImages(mapGalleryRowsToImages(data, supabase)).slice(0, 10);
 }
 
 export async function getGallerySections(): Promise<GallerySection[]> {

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  ArrowUpRight,
   CalendarDays,
   ChevronLeft,
   Clock3,
@@ -22,10 +21,6 @@ import {
 } from "@/components/ui/card";
 import { getEventDetail } from "@/lib/championship-queries";
 import { formatEventDate, formatEventTime } from "@/lib/date-utils";
-import {
-  PARTICIPANT_REGISTRATION_URL,
-  VOLUNTEER_REGISTRATION_URL,
-} from "@/lib/registration-links";
 
 type EventPageProps = {
   params: Promise<{ slug: string }>;
@@ -192,33 +187,22 @@ export default async function EventDetailPage({ params }: EventPageProps) {
           <Card>
             <CardHeader>
               <CardTitle>SportX Registration</CardTitle>
-              <CardDescription>Registration is managed through the official Google Forms.</CardDescription>
+              <CardDescription>
+                Event registration links appear here when the event team publishes one.
+              </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-3">
-              <Button asChild>
-                <Link
-                  href={event.registrationLink ?? PARTICIPANT_REGISTRATION_URL}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {event.registrationLink ? "Register for This Event" : "Participant Form"}
-                  <ArrowUpRight className="h-4 w-4" />
-                </Link>
-              </Button>
               {event.registrationLink ? (
-                <Button asChild variant="outline">
-                  <Link href={PARTICIPANT_REGISTRATION_URL} target="_blank" rel="noreferrer">
-                    General Participant Form
-                    <ArrowUpRight className="h-4 w-4" />
+                <Button asChild>
+                  <Link href={event.registrationLink} target="_blank" rel="noreferrer">
+                    Register for This Event
                   </Link>
                 </Button>
-              ) : null}
-              <Button asChild variant="outline">
-                <Link href={VOLUNTEER_REGISTRATION_URL} target="_blank" rel="noreferrer">
-                  Volunteer Form
-                  <ArrowUpRight className="h-4 w-4" />
-                </Link>
-              </Button>
+              ) : (
+                <p className="rounded-md border border-dashed p-4 text-sm text-muted-foreground">
+                  Registration for this event has not been opened yet.
+                </p>
+              )}
             </CardContent>
           </Card>
         </aside>

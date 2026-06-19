@@ -37,6 +37,7 @@ import {
   VOLUNTEER_REGISTRATION_URL,
 } from "@/lib/registration-links";
 import { SportXLogo } from "@/components/brand/sportx-logo";
+import { sortEventsByImpending } from "@/lib/event-ordering";
 
 export default async function HomePage() {
   const [stats, standings, events, announcements, results, galleryImages, carouselImages] =
@@ -51,9 +52,10 @@ export default async function HomePage() {
     ]);
 
   const pinnedAnnouncement = announcements[0];
-  const upcomingEvents = events
+  const orderedEvents = sortEventsByImpending(events);
+  const upcomingEvents = orderedEvents
     .filter((event) => event.status !== "completed")
-    .slice(0, 4);
+    .slice(0, 3);
   const nextEvent = upcomingEvents[0];
 
   return (
@@ -179,10 +181,50 @@ export default async function HomePage() {
         </Card>
       </section>
 
-      <section className="mx-auto grid min-w-0 w-full max-w-7xl gap-4 px-4 pb-12 sm:gap-6 sm:px-6 sm:pb-16 lg:grid-cols-3 lg:px-8">
+      <section className="mx-auto min-w-0 w-full max-w-7xl px-4 pb-12 sm:px-6 sm:pb-16 lg:px-8">
         <Card>
           <CardHeader>
-            <CardTitle>Upcoming Events</CardTitle>
+            <Link href="/announcements" className="group">
+              <CardTitle className="flex items-center justify-between gap-3">
+                Announcements
+                <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+              </CardTitle>
+            </Link>
+            <CardDescription>Official SportX updates from the organizing team.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {announcements.length ? (
+              <div className="grid gap-3 md:grid-cols-3">
+                {announcements.slice(0, 3).map((announcement) => (
+                  <div key={announcement.id} className="rounded-md border p-4">
+                    <div className="flex items-start gap-3">
+                      <Bell className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                      <div className="min-w-0">
+                        <p className="font-medium">{announcement.title}</p>
+                        <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                          {announcement.body}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <EmptyState icon={Bell} title="No announcements yet" />
+            )}
+          </CardContent>
+        </Card>
+      </section>
+
+      <section className="mx-auto grid min-w-0 w-full max-w-7xl gap-4 px-4 pb-12 sm:gap-6 sm:px-6 sm:pb-16 lg:grid-cols-3 lg:px-8">
+        <Card className="h-full">
+          <CardHeader>
+            <Link href="/events" className="group">
+              <CardTitle className="flex items-center justify-between gap-3">
+                Upcoming Events
+                <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+              </CardTitle>
+            </Link>
             <CardDescription>Fixtures, posters, and event details.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3">
@@ -223,14 +265,19 @@ export default async function HomePage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="h-full">
           <CardHeader>
-            <CardTitle>Recent Results</CardTitle>
+            <Link href="/leaderboard" className="group">
+              <CardTitle className="flex items-center justify-between gap-3">
+                Recent Results
+                <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+              </CardTitle>
+            </Link>
             <CardDescription>Latest scoring updates.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3">
             {results.length ? (
-              results.slice(0, 5).map((result) => (
+              results.slice(0, 3).map((result) => (
                 <div key={result.id} className="rounded-md border p-4">
                   <div className="flex items-start gap-3">
                     <span
@@ -255,14 +302,19 @@ export default async function HomePage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="h-full">
           <CardHeader>
-            <CardTitle>Championship Pulse</CardTitle>
-            <CardDescription>Quick public signals.</CardDescription>
+            <Link href="/announcements" className="group">
+              <CardTitle className="flex items-center justify-between gap-3">
+                Championship Pulse
+                <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+              </CardTitle>
+            </Link>
+            <CardDescription>Quick official signals from the organizing team.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3">
             {announcements.length ? (
-              announcements.slice(0, 4).map((announcement) => (
+              announcements.slice(0, 3).map((announcement) => (
                 <div key={announcement.id} className="rounded-md border p-4">
                   <div className="flex items-start gap-3">
                     <Bell className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
@@ -276,7 +328,7 @@ export default async function HomePage() {
                 </div>
               ))
             ) : (
-              <EmptyState icon={Bell} title="No announcements yet" />
+              <EmptyState icon={Bell} title="No pulse updates yet" />
             )}
           </CardContent>
         </Card>
